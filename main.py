@@ -8,7 +8,7 @@ WIDTH = 800
 LENGTH = 600
 
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = (0,0,0)
+background = pygame.image.load("spacee.jpg") # put stars image here
 
 fps = 60
 timer = pygame.time.Clock()
@@ -20,10 +20,22 @@ character_x = WIDTH // 2
 character_y = 450
 speed = 10
 
+#for background start
+x = 0
+y = 0
+
 running = True
 while running:
     timer.tick(fps)
-    window.fill(background)
+    
+    #scrolling background
+    
+    y += 3 #how fast it scrolls
+    
+    if y == LENGTH:
+        y = 0
+    window.blit(background, (x, y))
+    window.blit(background, (x, y - LENGTH))
     
     #character circle (change to sprite later)
     character = pygame.draw.circle(window, [255,0,0], [character_x,character_y], character_radius, 0 )
@@ -45,7 +57,6 @@ while running:
         character_x = WIDTH - WIDTH + character_radius
     if character_x > WIDTH - character_radius:
         character_x = WIDTH - character_radius
-        
         
     pygame.display.flip()
     
