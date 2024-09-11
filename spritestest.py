@@ -1,4 +1,3 @@
-"""Module providing a function printing python version."""
 import pygame
 import sys
 import random
@@ -107,8 +106,8 @@ def game_loop():
     character_radius = 30
     character_x = WIDTH // 2
     character_y = 450
-    lives = 3;
-    speed = 4
+    lives = 3
+    speed = 7
     obstacle_speed = 6
     grace_time = 3
     game_start_time = time.time()
@@ -116,13 +115,12 @@ def game_loop():
     #for background start
     x = 0
     y = 0
-    
      # Load meteor image
     meteor_img = pygame.transform.scale(meteor, (100, 100))  
     meteor_rect = meteor_img.get_rect()
 
 
-    #Makes random rectangles to collide with
+    #Makes random meteors to collide with
     obstacles=[]
     for _ in range(5):
         obstacle_rect = meteor_rect.copy()
@@ -135,7 +133,7 @@ def game_loop():
     last_blink_time = 0
     blinking = False
     blink_duration = 0.15
-
+    finish_line_y = -20000 #change this to make the game longer or shorter (smaller number is longer game)
     running = True
     #--------------------------------------------
     while running:
@@ -162,9 +160,10 @@ def game_loop():
         player.rect.x = max(0, min(WIDTH - player.rect.width, player.rect.x))
         player.rect.y = max(0, min(LENGTH - player.rect.height, player.rect.y))
         
-                
+        finish_line = pygame.Rect(0, finish_line_y, 800, 25)
         #scrolling background
         y += 6 #how fast it scrolls
+        finish_line_y += 6
         if y == LENGTH:
             y = 0
         window.blit(background, (x, y))
@@ -177,7 +176,6 @@ def game_loop():
                 # Respawn meteor off-screen above
                 obstacle_rect.y = random.randint(-obstacle_rect.height, -1 * meteor_rect.height)
                 obstacle_rect.x = random.randint(0, WIDTH - obstacle_rect.width)
-            
                     
         # Draw all meteors  
         for obstacle_rect, obstacle_img in obstacles:
@@ -198,6 +196,11 @@ def game_loop():
                     col = RED
                     lives -= 1  # Deduct a life on collision
                     obstacles.remove((obstacle_rect, _))  # Remove the obstacle to avoid repeated collision
+                    
+        
+        if player.rect.colliderect(finish_line):
+            show_start_screen()
+                    
             
             
         
@@ -218,6 +221,8 @@ def game_loop():
         lives_text = pygame.font.SysFont('Comic Sans MS', 30)
         text_surface = lives_text.render('Lives: ' + str(lives), False, (0, 255, 0))
         window.blit(text_surface, (5,560))
+        
+        pygame.draw.rect(window, BLUE, finish_line)
         
      
         pygame.display.flip()
