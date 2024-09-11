@@ -11,7 +11,8 @@ pygame.font.init()
 WIDTH = 800
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load("spacee.jpg") # put stars image here
+background = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/spacee.jpg") # put stars image here
+meteor = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/Meteor_01.png")
 fps = 60
 timer = pygame.time.Clock()
 
@@ -20,7 +21,7 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-player_images = [pygame.transform.scale(pygame.image.load(f'sprites/player{i}.png').convert_alpha(), (28,103)) for i in range(1, 5)]
+player_images = [pygame.transform.scale(pygame.image.load(f'C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/player{i}.png').convert_alpha(), (28,103)) for i in range(1, 5)]
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -115,13 +116,19 @@ def game_loop():
     #for background start
     x = 0
     y = 0
+    
+     # Load meteor image
+    meteor_img = pygame.transform.scale(meteor, (100, 100))  
+    meteor_rect = meteor_img.get_rect()
 
 
     #Makes random rectangles to collide with
     obstacles=[]
-    for _ in range(15):
-        obstacle_rect = pygame.Rect(random.randint(0, 500), random.randint(-400, 0), 25, 25)
-        obstacles.append(obstacle_rect)
+    for _ in range(5):
+        obstacle_rect = meteor_rect.copy()
+        obstacle_rect.x = random.randint(0, WIDTH - obstacle_rect.width)
+        obstacle_rect.y = random.randint(-700, -300)
+        obstacles.append((obstacle_rect, meteor_img))
     
 
     # Blink parameters
@@ -162,17 +169,19 @@ def game_loop():
             y = 0
         window.blit(background, (x, y))
         window.blit(background, (x, y - LENGTH))    
-            #move rectangles
-        for obstacle in obstacles:
-            obstacle.y += obstacle_speed
-            if obstacle.y > LENGTH:
-                obstacle.y = -obstacle_speed  # Respawn at the top
-                obstacle.x = random.randint(0, WIDTH - obstacle_speed)  # Random new horizontal position
+        
+        #move obstacles
+        for i, (obstacle_rect, _) in enumerate(obstacles):
+            obstacle_rect.y += obstacle_speed
+            if obstacle_rect.y > LENGTH:
+                # Respawn meteor off-screen above
+                obstacle_rect.y = random.randint(-obstacle_rect.height, -1 * meteor_rect.height)
+                obstacle_rect.x = random.randint(0, WIDTH - obstacle_rect.width)
             
                     
-        #draw all rectangles  
-        for obstacle in obstacles:
-            pygame.draw.rect(window, BLUE, obstacle)
+        # Draw all meteors  
+        for obstacle_rect, obstacle_img in obstacles:
+            window.blit(obstacle_img, obstacle_rect.topleft)
             
         # Update and draw all sprites
         all_sprites.update()
@@ -181,14 +190,15 @@ def game_loop():
             
         #check collision and change colour
         col = GREEN
-        for obstacle in obstacles:
-            if player.rect.colliderect(obstacle):
+        for obstacle_rect, _ in obstacles:
+            if player.rect.colliderect(obstacle_rect):
                 if not blinking:
                     blinking = True
                     last_blink_time = current_time
                     col = RED
                     lives -= 1  # Deduct a life on collision
-                    obstacles.remove(obstacle)  # Optional: remove the obstacle to avoid repeated collision
+                    obstacles.remove((obstacle_rect, _))  # Remove the obstacle to avoid repeated collision
+            
             
         
         # Handle blinking
