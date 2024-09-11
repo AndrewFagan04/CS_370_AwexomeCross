@@ -10,8 +10,8 @@ pygame.font.init()
 WIDTH = 800
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/spacee.jpg") # put stars image here
-meteor = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/Meteor_01.png")
+background = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/stars.jpg") # put stars image here
+meteor = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/Meteor_08.png")
 fps = 60
 timer = pygame.time.Clock()
 
@@ -95,6 +95,25 @@ def game_over_screen():
         pygame.display.flip()
         timer.tick(fps)
     
+def you_win_screen():
+    play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play Again")
+    my_font = pygame.font.SysFont('Comic Sans MS', 80)
+    while True:
+        window.fill(RED)
+        text_surface = my_font.render('You Win!', False, (0, 0, 0))
+        window.blit(text_surface, (240,150))
+        play_button.draw(window)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if play_button.is_clicked(event.pos):
+                    game_loop()  # Exit the start screen loop and start the game
+        
+        pygame.display.flip()
+        timer.tick(fps)
 
 def game_loop():
     
@@ -199,7 +218,7 @@ def game_loop():
                     
         
         if player.rect.colliderect(finish_line):
-            show_start_screen()
+            you_win_screen()
                     
             
             
