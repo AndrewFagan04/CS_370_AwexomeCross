@@ -1,3 +1,6 @@
+#moving background, movement, collision, lives, sound, random obstacles
+
+
 """Module providing a function printing python version."""
 import pygame
 import sys
@@ -68,8 +71,6 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         character_y -= speed
-        pygame.mixer.Channel.play()
-        pygame.mixer.Channel.stop()
     if keys[pygame.K_a]:
         character_x -= speed
     if keys[pygame.K_s]:

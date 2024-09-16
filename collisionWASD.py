@@ -1,3 +1,6 @@
+#background, movement, collision, random obstacles
+
+
 """Module providing a function printing python version."""
 import pygame
 import sys

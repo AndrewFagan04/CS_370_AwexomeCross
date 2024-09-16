@@ -1,3 +1,6 @@
+#moving background, movement, collision, lives, sound, random obstacles, start button, gameover screen/retry button
+
+
 """Module providing a function printing python version."""
 import pygame
 import sys
@@ -11,8 +14,8 @@ pygame.font.init()
 WIDTH = 800
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/spacee.jpg") # put stars image here
-meteor = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/Meteor_01.png")
+background = pygame.image.load("spaceee1.jpg") # put stars image here
+meteor = pygame.image.load("sprites/Meteor_01.png")
 fps = 60
 timer = pygame.time.Clock()
 
@@ -21,7 +24,7 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-player_images = [pygame.transform.scale(pygame.image.load(f'C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/player{i}.png').convert_alpha(), (28,103)) for i in range(1, 5)]
+player_images = [pygame.transform.scale(pygame.image.load(f'sprites/player{i}.png').convert_alpha(), (28,103)) for i in range(1, 5)]
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
