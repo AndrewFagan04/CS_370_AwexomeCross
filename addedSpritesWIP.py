@@ -5,6 +5,9 @@ import random
 import time
 
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("spaceMusic.wav")
+pygame.mixer.music.play(-1,0.0)
 
 #the screen
 WIDTH = 800
@@ -19,7 +22,7 @@ timer = pygame.time.Clock()
 character_radius = 30
 character_x = WIDTH // 2
 character_y = 450
-lives = 3;
+lives = 3
 speed = 7
 obstacle_speed = 6
 grace_time = 3
@@ -31,6 +34,8 @@ y = 0
 
 #getting hit sound effect
 hit_sfx = pygame.mixer.Sound("hit.wav")
+thruster_sfx = pygame.mixer.Sound("thrusters.wav")
+death_sfx = pygame.mixer.Sound("deathSound.wav")
 
 #Makes random rectangles to collide with
 obstacles=[]
@@ -63,6 +68,8 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         character_y -= speed
+        pygame.mixer.Channel.play()
+        pygame.mixer.Channel.stop()
     if keys[pygame.K_a]:
         character_x -= speed
     if keys[pygame.K_s]:
@@ -120,6 +127,8 @@ while running:
              
     # Check if lives are depleted
     if lives <= 0:
+        death_sfx.play()
+        pygame.time.wait(2000)
         print("Game Over!")  # we can replace this with an end game screen or restart logic
         running = False
         
