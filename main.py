@@ -3,6 +3,7 @@ import pygame
 import sys
 import random
 import time
+from os.path import join
 
 pygame.init()
 pygame.font.init()
@@ -11,9 +12,15 @@ pygame.font.init()
 WIDTH = 800
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load("spacee.jpg") # put stars image here
+background = pygame.image.load("stars.jpg") # put stars image here
 fps = 60
 timer = pygame.time.Clock()
+
+#imports image for player sprite and scales to smaller size
+player_sprite = pygame.image.load(join("sprites","player0.png"))
+player_sprite = pygame.transform.scale_by(player_sprite,(0.5,0.5))
+player_sprite_height = player_sprite.get_height()
+player_sprite_width = player_sprite.get_width()
 
 #define colours for random rectangles
 GREEN = (0, 255, 0)
@@ -170,8 +177,12 @@ def game_loop():
             else:
                 blinking = False
         
-        
+    
         pygame.draw.circle(window, col, (character_x,character_y), character_radius)
+        
+        #draws player sprite onto circle
+        window.blit(player_sprite,(character_x - (player_sprite_width/2),
+                                 character_y - (player_sprite_height/2)))
                 
         # Check if lives are depleted
         if lives <= 0:
