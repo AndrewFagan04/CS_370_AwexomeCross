@@ -7,18 +7,20 @@ pygame.init()
 pygame.font.init()
 
 #the screen
-WIDTH = 800
+WIDTH = 600
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/stars.jpg") # put stars image here
-meteor = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/Meteor_08.png")
+background = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/space.png") # put stars image here
 fps = 60
 timer = pygame.time.Clock()
+obstacle_speed = 3
+obstacle_interval = 600  # how fast obstacles spawn
 
 #define colours for random rectangles
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
+BLACK = (0,0,0)
 
 player_images = [pygame.transform.scale(pygame.image.load(f'C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/player{i}.png').convert_alpha(), (28,103)) for i in range(1, 5)]
 class Player(pygame.sprite.Sprite):
@@ -30,10 +32,10 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH // 2, LENGTH - 100)
         self.animation_speed = 0.1
-        self.last_update = time.time()
+        self.last_update = pygame.time.get_ticks()
 
     def update(self):
-        now = time.time()
+        now = pygame.time.get_ticks()
         if now - self.last_update > self.animation_speed:
             self.current_frame = (self.current_frame + 1) % len(self.images)
             self.image = self.images[self.current_frame]
@@ -55,6 +57,26 @@ class Button:
     def is_clicked(self, pos):
         return self.rect.collidepoint(pos)
     
+class Obstacle(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/Meteor_06.png")
+        self.image = pygame.transform.scale(self.image, (100, 100))  
+
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, WIDTH - self.rect.width)
+        self.rect.y = -self.rect.height
+    
+    def update(self):
+        self.rect.y += obstacle_speed
+        if self.rect.y > LENGTH:
+            self.kill()
+
+obstacle_group = pygame.sprite.Group()
+pygame.time.set_timer(pygame.USEREVENT, obstacle_interval)
+
+
+    
 def show_start_screen():
     play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play")
     my_font = pygame.font.SysFont('Comic Sans MS', 80)
@@ -70,7 +92,7 @@ def show_start_screen():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_clicked(event.pos):
-                    game_loop()  # Exit the start screen loop and start the game
+                    game_loop() 
         
         pygame.display.flip()
         timer.tick(fps)
@@ -90,7 +112,7 @@ def game_over_screen():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if replay_button.is_clicked(event.pos):
-                    game_loop()  # Exit the start screen loop and start the game
+                    game_loop() 
         
         pygame.display.flip()
         timer.tick(fps)
@@ -110,51 +132,34 @@ def you_win_screen():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_clicked(event.pos):
-                    game_loop()  # Exit the start screen loop and start the game
+                    game_loop()
         
         pygame.display.flip()
         timer.tick(fps)
+        
+
 
 def game_loop():
-    
     player = Player()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
     
-    #character stuff
-    character_radius = 30
-    character_x = WIDTH // 2
-    character_y = 450
+    obstacle_group = pygame.sprite.Group() 
+    pygame.time.set_timer(pygame.USEREVENT, obstacle_interval)
+    
+    # Character settings
     lives = 3
     speed = 7
-    obstacle_speed = 6
-    grace_time = 3
-    game_start_time = time.time()
-
-    #for background start
+    collision_occured = False
+    
+    # for the background
     x = 0
     y = 0
-     # Load meteor image
-    meteor_img = pygame.transform.scale(meteor, (100, 100))  
-    meteor_rect = meteor_img.get_rect()
-
-
-    #Makes random meteors to collide with
-    obstacles=[]
-    for _ in range(5):
-        obstacle_rect = meteor_rect.copy()
-        obstacle_rect.x = random.randint(0, WIDTH - obstacle_rect.width)
-        obstacle_rect.y = random.randint(-700, -300)
-        obstacles.append((obstacle_rect, meteor_img))
+      
     
-
-    # Blink parameters
-    last_blink_time = 0
-    blinking = False
-    blink_duration = 0.15
-    finish_line_y = -20000 #change this to make the game longer or shorter (smaller number is longer game)
+    finish_line_y = -5000  # how long the game is (smaller number = longer game)
     running = True
-    #--------------------------------------------
+    
     while running:
         timer.tick(fps)
         current_time = time.time()
@@ -163,8 +168,14 @@ def game_loop():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-                
-        #moving side to side
+            elif event.type == pygame.USEREVENT:
+                new_obstacle = Obstacle()
+                all_sprites.add(new_obstacle)  
+                obstacle_group.add(new_obstacle)
+        
+        obstacle_group.update()
+        
+        # Moving side to side
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             player.rect.y -= speed
@@ -175,76 +186,48 @@ def game_loop():
         if keys[pygame.K_d]:
             player.rect.x += speed
             
-        #borders so character doesn't move out of the screen   
+        # Borders so character doesn't move out of the screen
         player.rect.x = max(0, min(WIDTH - player.rect.width, player.rect.x))
         player.rect.y = max(0, min(LENGTH - player.rect.height, player.rect.y))
         
-        finish_line = pygame.Rect(0, finish_line_y, 800, 25)
-        #scrolling background
-        y += 6 #how fast it scrolls
+        # Scrolling background
+        y += 6  # How fast it scrolls
         finish_line_y += 6
-        if y == LENGTH:
+        if y >= LENGTH:
             y = 0
         window.blit(background, (x, y))
-        window.blit(background, (x, y - LENGTH))    
+        window.blit(background, (x, y - LENGTH))
         
-        #move obstacles
-        for i, (obstacle_rect, _) in enumerate(obstacles):
-            obstacle_rect.y += obstacle_speed
-            if obstacle_rect.y > LENGTH:
-                # Respawn meteor off-screen above
-                obstacle_rect.y = random.randint(-obstacle_rect.height, -1 * meteor_rect.height)
-                obstacle_rect.x = random.randint(0, WIDTH - obstacle_rect.width)
-                    
-        # Draw all meteors  
-        for obstacle_rect, obstacle_img in obstacles:
-            window.blit(obstacle_img, obstacle_rect.topleft)
-            
-        # Update and draw all sprites
+        # draw sprites
         all_sprites.update()
         all_sprites.draw(window)
-                    
-            
-        #check collision and change colour
-        col = GREEN
-        for obstacle_rect, _ in obstacles:
-            if player.rect.colliderect(obstacle_rect):
-                if not blinking:
-                    blinking = True
-                    last_blink_time = current_time
-                    col = RED
-                    lives -= 1  # Deduct a life on collision
-                    obstacles.remove((obstacle_rect, _))  # Remove the obstacle to avoid repeated collision
-                    
+        
+        # Finish line
+        finish_line = pygame.Rect(0, finish_line_y, 800, 25)
+        
+        # player/obstacle collision
+        collided_obstacles = pygame.sprite.spritecollide(player, obstacle_group, dokill=False)
+        for obstacle in collided_obstacles:
+            obstacle.kill()  # remove obstacle after hitting it
+            lives -= 1 
         
         if player.rect.colliderect(finish_line):
             you_win_screen()
-                    
-            
-            
         
-        # Handle blinking
-        if blinking:
-            if current_time - last_blink_time < blink_duration:
-                col = RED
-            else:
-                blinking = False
-        
-        
-                
-        # Check if lives are depleted
+        # Check if lives ran out
         if lives <= 0:
-            game_over_screen()  # we can replace this with an end game screen or restart logic
-            
-            
+            game_over_screen()  
+        
+        # Display lives
         lives_text = pygame.font.SysFont('Comic Sans MS', 30)
         text_surface = lives_text.render('Lives: ' + str(lives), False, (0, 255, 0))
-        window.blit(text_surface, (5,560))
+        window.blit(text_surface, (5, 560))
         
+        # Draw finish line
         pygame.draw.rect(window, BLUE, finish_line)
         
-     
         pygame.display.flip()
+
     
 def main():
     while True:
