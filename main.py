@@ -17,10 +17,15 @@ fps = 60
 timer = pygame.time.Clock()
 
 #imports image for player sprite and scales to smaller size
-player_sprite = pygame.image.load(join("sprites","player0.png"))
+player_sprite = pygame.image.load(join("sprites","player0.png")).convert_alpha()
 player_sprite = pygame.transform.scale_by(player_sprite,(0.5,0.5))
 player_sprite_height = player_sprite.get_height()
 player_sprite_width = player_sprite.get_width()
+
+meteor_sprite = pygame.image.load(join("sprites","Meteor_06.png")).convert_alpha()
+meteor_sprite = pygame.transform.scale_by(meteor_sprite,(0.15,0.15))
+meteor_sprite_height = meteor_sprite.get_height()
+meteor_sprite_width = meteor_sprite.get_width()
 
 #define colours for random rectangles
 GREEN = (0, 255, 0)
@@ -155,6 +160,8 @@ def game_loop():
         #draw all rectangles  
         for obstacle in obstacles:
             pygame.draw.rect(window, BLUE, obstacle)
+            window.blit(meteor_sprite,(obstacle.x - meteor_sprite_width/2,
+                                       obstacle.y - meteor_sprite_height/2))
                     
             
         #check collision and change colour
