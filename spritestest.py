@@ -24,7 +24,7 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-player_images = [pygame.transform.scale(pygame.image.load(f'sprites/player{i}.png').convert_alpha(), (28,103)) for i in range(1, 5)]
+player_images = [pygame.transform.scale(pygame.image.load(f'sprites/Cheat({i}).png').convert_alpha(), (50,50)) for i in range(1, 5)]
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
