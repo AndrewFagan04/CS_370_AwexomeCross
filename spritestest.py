@@ -2,7 +2,7 @@ import pygame
 import sys
 import random
 import time
-from os.path import join
+from os.path import join # join("filepath from working directory","filename") to get file instead of copying whole path
 
 pygame.init()
 pygame.font.init()
