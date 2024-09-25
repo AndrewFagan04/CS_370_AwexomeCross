@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 import time
+from os.path import join
 
 pygame.init()
 pygame.font.init()
@@ -10,7 +11,7 @@ pygame.font.init()
 WIDTH = 600
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/space.png") # put stars image here
+background = pygame.image.load(join("space.png")) # put stars image here
 fps = 60
 timer = pygame.time.Clock()
 obstacle_speed = 3
@@ -22,7 +23,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 BLACK = (0,0,0)
 
-player_images = [pygame.transform.scale(pygame.image.load(f'C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/player{i}.png').convert_alpha(), (28,103)) for i in range(1, 5)]
+player_images = [pygame.transform.scale(pygame.image.load(join('sprites',f'player{i}.png')).convert_alpha(), (28,103)) for i in range(1, 5)]
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -60,7 +61,7 @@ class Button:
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/Meteor_06.png")
+        self.image = pygame.image.load(join('sprites',"Meteor_06.png"))
         self.image = pygame.transform.scale(self.image, (100, 100))  
 
         self.rect = self.image.get_rect()
@@ -79,7 +80,7 @@ pygame.time.set_timer(pygame.USEREVENT, obstacle_interval)
     
 def show_start_screen():
     play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play")
-    my_font = pygame.font.SysFont('Comic Sans MS', 80)
+    my_font = pygame.font.SysFont('Comic Sans MS', 60)
     while True:
         window.fill(RED)
         text_surface = my_font.render('Awesome Cross V2', False, (0, 0, 0))
@@ -99,7 +100,7 @@ def show_start_screen():
         
 def game_over_screen():
     replay_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Try again")
-    my_font = pygame.font.SysFont('Comic Sans MS', 80)
+    my_font = pygame.font.SysFont('Comic Sans MS', 60)
     while True:
         window.fill(RED)
         text_surface = my_font.render('Game Over!', False, (0, 0, 0))
@@ -119,7 +120,7 @@ def game_over_screen():
     
 def you_win_screen():
     play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play Again")
-    my_font = pygame.font.SysFont('Comic Sans MS', 80)
+    my_font = pygame.font.SysFont('Comic Sans MS', 60)
     while True:
         window.fill(RED)
         text_surface = my_font.render('You Win!', False, (0, 0, 0))
