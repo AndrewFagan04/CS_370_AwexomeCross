@@ -157,7 +157,7 @@ def game_loop():
     y = 0
       
     
-    finish_line_y = -5000  # how long the game is (smaller number = longer game)
+    finish_line_y = -7000  # how long the game is (smaller number = longer game)
     running = True
     
     while running:
@@ -193,6 +193,8 @@ def game_loop():
         # Scrolling background
         y += 6  # How fast it scrolls
         finish_line_y += 6
+        if finish_line_y > LENGTH:
+            finish_line_y = LENGTH
         if y >= LENGTH:
             y = 0
         window.blit(background, (x, y))
@@ -217,6 +219,7 @@ def game_loop():
         # Check if lives ran out
         if lives <= 0:
             game_over_screen()  
+        
         
         # Display lives
         lives_text = pygame.font.SysFont('Comic Sans MS', 30)
