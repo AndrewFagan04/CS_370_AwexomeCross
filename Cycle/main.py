@@ -87,6 +87,23 @@ def game_loop():
         all_sprites.update()
         all_sprites.draw(window)
         
+        # player/obstacle COLLISION
+        collided_obstacles = pygame.sprite.spritecollide(playerInst, obstacle_group, dokill=False)
+        for obstacle in collided_obstacles:
+            obstacle.kill()  # remove obstacle after hitting it
+            lives -= 1
+            
+       
+       
+        # Check if lives ran out
+        if lives <= 0:
+            screens.show_start_screen(WIDTH, LENGTH, window, game_loop)
+            
+        # Display lives
+        lives_text = pygame.font.SysFont('Comic Sans MS', 30)
+        text_surface = lives_text.render('Lives: ' + str(lives), False, (0, 255, 0))
+        window.blit(text_surface, (5, 560)) 
+        
         pygame.display.flip()
         
 def main():
