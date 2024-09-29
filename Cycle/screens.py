@@ -45,4 +45,45 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
         
         pygame.display.flip()
         pygame.time.Clock().tick(fps)
+ 
+      
+def game_over_screen(WIDTH, LENGTH, window, game_loop):
+    replay_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Try again")
+    my_font = pygame.font.SysFont('Comic Sans MS', 60)
+    while True:
+        window.fill(RED)
+        text_surface = my_font.render('Game Over!', False, (0, 0, 0))
+        window.blit(text_surface, (190,150))
+        replay_button.draw(window)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if replay_button.is_clicked(event.pos):
+                    game_loop() 
+        
+        pygame.display.flip()
+        pygame.time.Clock().tick(fps)
+        
+def you_win_screen(WIDTH, LENGTH, window, game_loop):
+    play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play Again")
+    my_font = pygame.font.SysFont('Comic Sans MS', 60)
+    while True:
+        window.fill(RED)
+        text_surface = my_font.render('You Win!', False, (0, 0, 0))
+        window.blit(text_surface, (240,150))
+        play_button.draw(window)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if play_button.is_clicked(event.pos):
+                    game_loop()
+        
+        pygame.display.flip()
+        pygame.time.Clock().tick(fps)
 

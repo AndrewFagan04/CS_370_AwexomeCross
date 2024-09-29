@@ -44,6 +44,9 @@ def game_loop():
     # for the background
     x = 0
     y = 0
+    
+    #finishline
+    finish_line_y = -1000
       
     running = True
     while running:
@@ -78,10 +81,14 @@ def game_loop():
                     
         # Scrolling background
         y += 6  # How fast it scrolls
+        finish_line_y += 6
+        if finish_line_y > LENGTH:
+            finish_line_y = LENGTH
         if y >= LENGTH:
             y = 0
         window.blit(background, (x, y))
         window.blit(background, (x, y - LENGTH))
+        print(finish_line_y)
         
         # draw sprites
         all_sprites.update()
@@ -93,16 +100,25 @@ def game_loop():
             obstacle.kill()  # remove obstacle after hitting it
             lives -= 1
             
+        # Finish line
+        finish_line = pygame.Rect(0, finish_line_y, 800, 25)
+        
+        if playerInst.rect.colliderect(finish_line):
+            screens.you_win_screen(WIDTH, LENGTH, window, game_loop)
+            
        
        
         # Check if lives ran out
         if lives <= 0:
-            screens.show_start_screen(WIDTH, LENGTH, window, game_loop)
+            screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
             
         # Display lives
         lives_text = pygame.font.SysFont('Comic Sans MS', 30)
         text_surface = lives_text.render('Lives: ' + str(lives), False, (0, 255, 0))
         window.blit(text_surface, (5, 560)) 
+        
+        # Draw finish line
+        pygame.draw.rect(window, BLUE, finish_line)
         
         pygame.display.flip()
         

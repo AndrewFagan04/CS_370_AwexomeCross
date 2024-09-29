@@ -207,6 +207,7 @@ def game_loop():
         
         # Finish line
         finish_line = pygame.Rect(0, finish_line_y, 800, 25)
+        print(finish_line_y)
         
         # player/obstacle collision
         collided_obstacles = pygame.sprite.spritecollide(player, obstacle_group, dokill=False)
