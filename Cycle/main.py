@@ -13,7 +13,7 @@ pygame.font.init()
 WIDTH = 600
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load("stars.jpg") # put stars image here
+background = pygame.image.load("space.png") # put stars image here
 fps = 60
 timer = pygame.time.Clock()
 obstacle_speed = 3
@@ -46,8 +46,11 @@ def game_loop():
     y = 0
     
     #finishline
-    finish_line_y = -1000
+    finish_line_y = -3000
       
+    game_finished = False
+    stop_moving = False
+    
     running = True
     while running:
         timer.tick(fps)
@@ -57,7 +60,7 @@ def game_loop():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.USEREVENT:
+            elif event.type == pygame.USEREVENT and not game_finished:
                 new_obstacle = Obstacle(obstacle_speed, WIDTH, LENGTH)
                 all_sprites.add(new_obstacle)  
                 obstacle_group.add(new_obstacle)
@@ -66,14 +69,16 @@ def game_loop():
                     
         #Movement
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
-            playerInst.rect.y -= speed
+        if stop_moving == False:
+            if keys[pygame.K_w]:
+                playerInst.rect.y -= speed
+            if keys[pygame.K_s]:
+                playerInst.rect.y += speed
+        
         if keys[pygame.K_a]:
-            playerInst.rect.x -= speed
-        if keys[pygame.K_s]:
-            playerInst.rect.y += speed
+                playerInst.rect.x -= speed
         if keys[pygame.K_d]:
-            playerInst.rect.x += speed
+                playerInst.rect.x += speed
             
         #Borders
         playerInst.rect.x = max(0, min(WIDTH - playerInst.rect.width, playerInst.rect.x))
@@ -81,9 +86,14 @@ def game_loop():
                     
         # Scrolling background
         y += 6  # How fast it scrolls
-        finish_line_y += 6
-        if finish_line_y > LENGTH:
-            finish_line_y = LENGTH
+        if finish_line_y < -5:
+            finish_line_y += 6
+        if finish_line_y > -500:
+            game_finished = True
+        if finish_line_y > -100:
+            stop_moving = True
+            playerInst.rect.y -= 5
+            
         if y >= LENGTH:
             y = 0
         window.blit(background, (x, y))
