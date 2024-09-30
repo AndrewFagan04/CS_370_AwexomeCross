@@ -4,7 +4,10 @@ import random
 import time
 from player import Player
 from obstacle import Obstacle
+from powerups import Invincibility
 import screens
+from os.path import join
+
 
 pygame.init()
 pygame.font.init()
@@ -15,9 +18,11 @@ LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
 background = pygame.image.load("space.png") # put stars image here
 fps = 60
+timing = 1
 timer = pygame.time.Clock()
 obstacle_speed = 3
 obstacle_interval = 600  # how fast obstacles spawn
+powerup_interval = 2000
 
 player_images = [pygame.transform.scale(pygame.image.load(f'C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/Cycle/sprites/player{i}.png').convert_alpha(), (28,103)) for i in range(1, 5)]
 
@@ -34,7 +39,19 @@ def game_loop():
     all_sprites.add(playerInst)
     
     obstacle_group = pygame.sprite.Group()
-    pygame.time.set_timer(pygame.USEREVENT, obstacle_interval)
+    powerup_group = pygame.sprite.Group()
+    
+    obstacle_event = pygame.USEREVENT + 1
+    powerup_event = pygame.USEREVENT + 2
+
+    pygame.time.set_timer(obstacle_event, obstacle_interval)
+    pygame.time.set_timer(powerup_event, powerup_interval)
+    
+    # Power-up state tracking
+    powerup_active = False
+    powerup_start = 0
+    powerup_duration = 2000  # 5 seconds for power-up effect
+    invincible = False
     
 
     #character settings   
@@ -46,7 +63,7 @@ def game_loop():
     y = 0
     
     #finishline
-    finish_line_y = -3000
+    finish_line_y = -5000
       
     game_finished = False
     stop_moving = False
@@ -56,19 +73,28 @@ def game_loop():
         timer.tick(fps)
         current_time = time.time()
         
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.USEREVENT and not game_finished:
+            elif event.type == obstacle_event and not game_finished:
+                #creating obstacle
                 new_obstacle = Obstacle(obstacle_speed, WIDTH, LENGTH)
                 all_sprites.add(new_obstacle)  
                 obstacle_group.add(new_obstacle)
-                
+            elif event.type == powerup_event and not game_finished:
+                #create invincibility powerup
+                new_powerup = Invincibility(obstacle_speed, WIDTH, LENGTH)
+                all_sprites.add(new_powerup)
+                powerup_group.add(new_powerup)
+        
         obstacle_group.update()
+        powerup_group.update()
                     
         #Movement
         keys = pygame.key.get_pressed()
+        #condition for when player gets near finish line
         if stop_moving == False:
             if keys[pygame.K_w]:
                 playerInst.rect.y -= speed
@@ -98,18 +124,36 @@ def game_loop():
             y = 0
         window.blit(background, (x, y))
         window.blit(background, (x, y - LENGTH))
-        print(finish_line_y)
         
         # draw sprites
         all_sprites.update()
         all_sprites.draw(window)
         
-        # player/obstacle COLLISION
-        collided_obstacles = pygame.sprite.spritecollide(playerInst, obstacle_group, dokill=False)
-        for obstacle in collided_obstacles:
-            obstacle.kill()  # remove obstacle after hitting it
-            lives -= 1
+        if invincible == False:
+            # player/obstacle COLLISION
+            collided_obstacles = pygame.sprite.spritecollide(playerInst, obstacle_group, dokill=False)
+            for obstacle in collided_obstacles:
+                obstacle.kill()  # remove obstacle after hitting it
+                lives -= 1
             
+            
+        collided_powerups = pygame.sprite.spritecollide(playerInst, powerup_group, dokill=False)
+        for powerup in collided_powerups:
+            powerup.kill()
+            powerup_active = True
+            powerup_start_time = pygame.time.get_ticks()
+            
+        if powerup_active:
+            current_ticks = pygame.time.get_ticks()
+            if current_ticks - powerup_start_time < powerup_duration:
+                y += 10  # Example effect: double speed
+                invincible = True
+            else:
+                powerup_active = False
+                invincible = False
+                y += 6  # Reset speed to normal
+            
+        
         # Finish line
         finish_line = pygame.Rect(0, finish_line_y, 800, 25)
         
