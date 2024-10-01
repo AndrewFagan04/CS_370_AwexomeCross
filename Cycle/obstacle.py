@@ -6,7 +6,6 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/sprites/Meteor_06.png")
         self.image = pygame.transform.scale(self.image, (100, 100))  #change how big it is
-
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(0, WIDTH - self.rect.width) #spawn in range
         self.rect.y = -self.rect.height

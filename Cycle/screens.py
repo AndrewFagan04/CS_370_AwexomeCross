@@ -31,8 +31,8 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
     
     while True:
         window.fill(RED)
-        text_surface = my_font.render('Awesome Cross V2', False, (0, 0, 0))
-        window.blit(text_surface, (55, 150))
+        text_surface = my_font.render('Awesome Cross V2', False, (0, 0, 0)) #text
+        window.blit(text_surface, (55, 150)) 
         play_button.draw(window)
         
         for event in pygame.event.get():
