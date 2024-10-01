@@ -7,8 +7,6 @@ from obstacle import Obstacle
 from powerups import Invincibility
 import screens
 from os.path import join
-
-
 pygame.init()
 pygame.font.init()
 
@@ -24,7 +22,7 @@ obstacle_speed = 3
 obstacle_interval = 600  # how fast obstacles spawn
 powerup_interval = 2000
 
-player_images = [pygame.transform.scale(pygame.image.load(f'C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/Cycle/sprites/player{i}.png').convert_alpha(), (28,103)) for i in range(1, 5)]
+player_images = [pygame.transform.scale(pygame.image.load(join('sprites',f'player{i}.png')).convert_alpha(), (28,103)) for i in range(1, 5)]
 
 #define colours for random rectangles
 GREEN = (0, 255, 0)
