@@ -63,9 +63,9 @@ def game_loop():
     #random variable test
     z = 0
     
-    #finishline
-    finish_line_y = -5000
-    total_distance = -5000
+    #finishline, change both because total_distance is needed for progress bar
+    finish_line_y = -10000
+    total_distance = -10000
       
     game_finished = False
     stop_moving = False
@@ -187,7 +187,9 @@ def game_loop():
         progress_bar_height = 20
         progress_bar_x = (WIDTH - progress_bar_width) // 2
         progress_bar_y = 10
+        #draw white
         pygame.draw.rect(window, (255, 255, 255), (progress_bar_x, progress_bar_y, progress_bar_width, progress_bar_height), 2)
+        #draw green (moving)
         filled_width = int(progress * progress_bar_width)
         pygame.draw.rect(window, (0, 255, 0), (progress_bar_x, progress_bar_y, filled_width, progress_bar_height))
         
