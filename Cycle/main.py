@@ -125,7 +125,10 @@ def game_loop():
         
         # draw sprites
         all_sprites.update()
-        all_sprites.draw(window)
+        obstacle_group.draw(window)
+        powerup_group.draw(window)
+        window.blit(playerInst.image, playerInst.rect)
+
         
         if invincible == False:
             # player/obstacle COLLISION
