@@ -60,8 +60,12 @@ def game_loop():
     x = 0
     y = 0
     
+    #random variable test
+    z = 0
+    
     #finishline
     finish_line_y = -5000
+    total_distance = -5000
       
     game_finished = False
     stop_moving = False
@@ -70,8 +74,6 @@ def game_loop():
     while running:
         timer.tick(fps)
         current_time = time.time()
-        
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -174,6 +176,21 @@ def game_loop():
         
         # Draw finish line
         pygame.draw.rect(window, BLUE, finish_line)
+        
+         # Calculate progress
+        distance_covered = abs(playerInst.rect.y)
+        progress = 1- (finish_line_y / total_distance)
+        print(progress)
+        
+        # Draw progress bar
+        progress_bar_width = 200
+        progress_bar_height = 20
+        progress_bar_x = (WIDTH - progress_bar_width) // 2
+        progress_bar_y = 10
+        pygame.draw.rect(window, (255, 255, 255), (progress_bar_x, progress_bar_y, progress_bar_width, progress_bar_height), 2)
+        filled_width = int(progress * progress_bar_width)
+        pygame.draw.rect(window, (0, 255, 0), (progress_bar_x, progress_bar_y, filled_width, progress_bar_height))
+        
         
         pygame.display.flip()
         
