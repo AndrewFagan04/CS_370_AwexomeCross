@@ -27,12 +27,13 @@ class Button:
 
 def show_start_screen(WIDTH, LENGTH, window, game_loop):
     play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play")
-    my_font = pygame.font.SysFont('Comic Sans MS', 80)
+    my_font = pygame.font.SysFont('Comic Sans MS', 60)
     
     while True:
         window.fill(RED)
         text_surface = my_font.render('Awesome Cross V2', False, (0, 0, 0)) #text
-        window.blit(text_surface, (55, 150)) 
+        text_rect = text_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the text to center it
+        window.blit(text_surface, text_rect) 
         play_button.draw(window)
         
         for event in pygame.event.get():
@@ -53,7 +54,8 @@ def game_over_screen(WIDTH, LENGTH, window, game_loop):
     while True:
         window.fill(RED)
         text_surface = my_font.render('Game Over!', False, (0, 0, 0))
-        window.blit(text_surface, (190,150))
+        text_rect = text_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the text to center it
+        window.blit(text_surface, text_rect)
         replay_button.draw(window)
         
         for event in pygame.event.get():
