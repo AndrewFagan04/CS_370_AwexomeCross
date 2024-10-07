@@ -173,6 +173,11 @@ def game_loop():
         lives_text = pygame.font.SysFont('Comic Sans MS', 30)
         text_surface = lives_text.render('Lives: ' + str(lives), False, (0, 255, 0))
         window.blit(text_surface, (5, 560)) 
+
+        # Displays score/Distance traveled
+        score_text = pygame.font.SysFont('Comic Sans MS', 20)
+        score_surface = score_text.render('Score: ' + str(abs(total_distance) + finish_line_y), False, 'yellow')
+        window.blit(score_surface, (WIDTH - 150,5))
         
         # Draw finish line
         pygame.draw.rect(window, BLUE, finish_line)
