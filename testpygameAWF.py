@@ -1,3 +1,6 @@
+#create game window
+
+
 import pygame
 pygame.init()
 

@@ -1,4 +1,5 @@
 # <insert collisionWASD.py here>
+from collisionWASD import *
 
 # Lives system
 lives = 3  # Start with 3 lives
