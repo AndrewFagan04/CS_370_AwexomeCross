@@ -20,7 +20,11 @@ timing = 1
 timer = pygame.time.Clock()
 obstacle_speed = 3
 obstacle_interval = 600  # how fast obstacles spawn
+#powerup_interval = random.randint(2000, 5000)
 powerup_interval = 2000
+
+death_sound = pygame.mixer.Sound("deathSound.wav")
+hit_sound = pygame.mixer.Sound("hit.wav")
 
 player_images = [pygame.transform.scale(pygame.image.load(join('sprites',f'player{i}.png')).convert_alpha(), (28,103)) for i in range(1, 5)]
 
@@ -84,10 +88,23 @@ def game_loop():
                 all_sprites.add(new_obstacle)  
                 obstacle_group.add(new_obstacle)
             elif event.type == powerup_event and not game_finished:
-                #create invincibility powerup
-                new_powerup = Invincibility(obstacle_speed, WIDTH, LENGTH)
-                all_sprites.add(new_powerup)
-                powerup_group.add(new_powerup)
+                powerup_spawned = False
+                while not powerup_spawned:
+                    # make powerup
+                    new_powerup = Invincibility(obstacle_speed, WIDTH, LENGTH)
+                    
+                    # check collision with obstacle
+                    collided_obstacles = pygame.sprite.spritecollide(new_powerup, obstacle_group, dokill=False)
+                    if collided_obstacles:
+                        new_powerup.kill()
+                    # If no collision, add the power-up to the groups and break the loop
+                    if not collided_obstacles:
+                        all_sprites.add(new_powerup)
+                        powerup_group.add(new_powerup)
+                        powerup_spawned = True  # Exit the loop after successful spawn
+                    else:
+                        # Optional: You could also reposition the power-up here if needed
+                        print("Power-up repositioned due to collision with obstacle.")
         
         obstacle_group.update()
         powerup_group.update()
@@ -137,6 +154,7 @@ def game_loop():
             collided_obstacles = pygame.sprite.spritecollide(playerInst, obstacle_group, dokill=False)
             for obstacle in collided_obstacles:
                 obstacle.kill()  # remove obstacle after hitting it
+                pygame.mixer.Sound.play(hit_sound)
                 lives -= 1
             
             
@@ -167,6 +185,7 @@ def game_loop():
        
         # Check if lives ran out
         if lives <= 0:
+            pygame.mixer.Sound.play(death_sound)
             screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
             
         # Display lives
@@ -183,9 +202,7 @@ def game_loop():
         pygame.draw.rect(window, BLUE, finish_line)
         
          # Calculate progress
-        distance_covered = abs(playerInst.rect.y)
-        progress = 1- (finish_line_y / total_distance)
-        print(progress)
+        progress = 1 - (finish_line_y / total_distance)
         
         # Draw progress bar
         progress_bar_width = 200
