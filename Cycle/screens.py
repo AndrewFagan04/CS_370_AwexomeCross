@@ -75,7 +75,8 @@ def you_win_screen(WIDTH, LENGTH, window, game_loop):
     while True:
         window.fill(RED)
         text_surface = my_font.render('You Win!', False, (0, 0, 0))
-        window.blit(text_surface, (240,150))
+        text_rect = text_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the text to center it
+        window.blit(text_surface, text_rect)
         play_button.draw(window)
         
         for event in pygame.event.get():
@@ -88,4 +89,6 @@ def you_win_screen(WIDTH, LENGTH, window, game_loop):
         
         pygame.display.flip()
         pygame.time.Clock().tick(fps)
+
+#def high_score_screen(Width, Length, window, game_loop):
 
