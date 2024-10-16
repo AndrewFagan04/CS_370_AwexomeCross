@@ -7,7 +7,7 @@ class Invincibility(pygame.sprite.Sprite):
     def __init__(self, obstacle_speed, WIDTH, LENGTH):
         super().__init__()
         #self.image = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/Cycle/sprites/coin.png")
-        self.image = pygame.image.load(join('Cycle\sprites',"goldcoin22.png"))
+        self.image = pygame.image.load(join('Cycle_2\sprites',"goldcoin22.png"))
 
         self.image = pygame.transform.scale(self.image, (150, 90)) 
         self.rect = self.image.get_rect()
