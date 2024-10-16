@@ -201,7 +201,7 @@ def game_loop():
             screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
             
         # Display lives
-        lives_text = pygame.font.SysFont('Comic Sans MS', 30)
+        lives_text = pygame.font.SysFont('Comic Sans MS', 50)
         text_surface = lives_text.render('Lives: ' + str(lives), False, (0, 255, 0))
         window.blit(text_surface, (5, 560)) 
 
