@@ -4,7 +4,7 @@ from os.path import join
 #mostly same as Obstacle.py
 
 class Invincibility(pygame.sprite.Sprite):
-    def __init__(self, obstacle_speed, WIDTH, LENGTH):
+    def __init__(self, powerup_speed, WIDTH, LENGTH):
         super().__init__()
         #self.image = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/Cycle/sprites/coin.png")
         self.image = pygame.image.load(join('Cycle_2/sprites',"goldcoin22.png"))
@@ -13,7 +13,7 @@ class Invincibility(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(0, WIDTH - self.rect.width) 
         self.rect.y = -self.rect.height
-        self.speed = obstacle_speed  
+        self.speed = powerup_speed  
         self.LENGTH = LENGTH 
 
     def update(self):

@@ -19,6 +19,8 @@ fps = 60
 timing = 1
 timer = pygame.time.Clock()
 obstacle_speed = 3
+powerup_speed = 3
+game_speed = 6
 obstacle_interval = 600  # how fast obstacles spawn
 #powerup_interval = random.randint(2000, 5000)
 powerup_interval = 2000
@@ -91,7 +93,7 @@ def game_loop():
                 powerup_spawned = False
                 while not powerup_spawned:
                     # make powerup
-                    new_powerup = Invincibility(obstacle_speed, WIDTH, LENGTH)
+                    new_powerup = Invincibility(powerup_speed, WIDTH, LENGTH)
                     
                     # check collision with obstacle
                     collided_obstacles = pygame.sprite.spritecollide(new_powerup, obstacle_group, dokill=False)
@@ -167,14 +169,24 @@ def game_loop():
         if powerup_active:
             current_ticks = pygame.time.get_ticks()
             if current_ticks - powerup_start_time < powerup_duration:
-                y += 10  # Example effect: double speed
+                y += game_speed * 2  # Example effect: double speed
+                
                 invincible = True
+                for obstacle in obstacle_group:
+                    obstacle.speed = obstacle_speed * 2
+                for powerup in powerup_group:
+                    powerup.speed = powerup_speed * 2
             else:
                 powerup_active = False
                 invincible = False
+                
                 y += 6  # Reset speed to normal
+                for obstacle in obstacle_group:
+                    obstacle.speed = obstacle_speed 
+                for powerup in powerup_group:
+                    powerup.speed = powerup_speed 
             
-        
+    
         # Finish line
         finish_line = pygame.Rect(0, finish_line_y, 800, 25)
         
