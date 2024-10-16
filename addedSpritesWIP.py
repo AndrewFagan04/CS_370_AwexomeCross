@@ -16,7 +16,7 @@ pygame.mixer.music.play(-1,0.0)
 WIDTH = 800
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load("spacee.jpg") # put stars image here
+background = pygame.image.load("spaceee1.jpg") # put stars image here
 fps = 60
 timer = pygame.time.Clock()
 

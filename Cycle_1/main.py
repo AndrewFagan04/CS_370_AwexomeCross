@@ -68,8 +68,8 @@ def game_loop():
     z = 0
     
     #finishline, change both because total_distance is needed for progress bar
-    finish_line_y = -10000
-    total_distance = -10000
+    finish_line_y = -4000
+    total_distance = -4000
       
     game_finished = False
     stop_moving = False
