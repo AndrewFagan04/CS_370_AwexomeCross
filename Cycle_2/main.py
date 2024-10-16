@@ -26,7 +26,7 @@ powerup_interval = 2000
 death_sound = pygame.mixer.Sound(join("Cycle_2/audio","deathSound.wav"))
 hit_sound = pygame.mixer.Sound(join('Cycle_2/audio',"hit.wav"))
 
-player_images = [pygame.transform.scale(pygame.image.load(join('Cycle_2/sprites',f'player{i}.png')).convert_alpha(), (28,103)) for i in range(1, 5)]
+player_images = [pygame.transform.scale(pygame.image.load(join('Cycle_2/sprites',f'cheat{i}.png')).convert_alpha(), (80,80)) for i in range(1, 5)]
 
 #define colours for random rectangles
 GREEN = (0, 255, 0)
