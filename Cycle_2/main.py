@@ -14,7 +14,7 @@ pygame.font.init()
 WIDTH = 600
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load(join('Cycle_2\sprites',"space.png")) # put stars image here
+background = pygame.image.load(join('Cycle_2/sprites',"space.png")) # put stars image here
 fps = 60
 timing = 1
 timer = pygame.time.Clock()
@@ -23,10 +23,10 @@ obstacle_interval = 600  # how fast obstacles spawn
 #powerup_interval = random.randint(2000, 5000)
 powerup_interval = 2000
 
-death_sound = pygame.mixer.Sound(join("Cycle_2\\audio","deathSound.wav"))
-hit_sound = pygame.mixer.Sound(join('Cycle_2\\audio',"hit.wav"))
+death_sound = pygame.mixer.Sound(join("Cycle_2/audio","deathSound.wav"))
+hit_sound = pygame.mixer.Sound(join('Cycle_2/audio',"hit.wav"))
 
-player_images = [pygame.transform.scale(pygame.image.load(join('sprites',f'player{i}.png')).convert_alpha(), (28,103)) for i in range(1, 5)]
+player_images = [pygame.transform.scale(pygame.image.load(join('Cycle_2/sprites',f'player{i}.png')).convert_alpha(), (28,103)) for i in range(1, 5)]
 
 #define colours for random rectangles
 GREEN = (0, 255, 0)
