@@ -29,7 +29,7 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
     play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
 
-    score_button = Button(WIDTH // 2 - 100, LENGTH // 2 + 50, 200, 50, GREEN, "High Scores")
+    high_score_button = Button(WIDTH // 2 - 100, LENGTH // 2 + 50, 200, 50, GREEN, "High Scores")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     
     while True:
@@ -38,7 +38,7 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
         start_rect = start_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(start_surface, start_rect) 
         play_button.draw(window)
-        score_button.draw(window)
+        high_score_button.draw(window)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -47,7 +47,7 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_clicked(event.pos):
                     game_loop()
-                if score_button.is_clicked(event.pos):
+                if high_score_button.is_clicked(event.pos):
                     high_score_screen(WIDTH, LENGTH, window, game_loop)
         
         pygame.display.flip()

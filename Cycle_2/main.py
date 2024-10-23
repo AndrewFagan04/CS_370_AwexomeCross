@@ -28,7 +28,7 @@ powerup_interval = 2000
 death_sound = pygame.mixer.Sound(join("Cycle_2/audio","deathSound.wav"))
 hit_sound = pygame.mixer.Sound(join('Cycle_2/audio',"hit.wav"))
 
-player_images = [pygame.transform.scale(pygame.image.load(join('Cycle_2/sprites',f'cheat{i}.png')).convert_alpha(), (80,80)) for i in range(1, 5)]
+#player_images = [pygame.transform.scale(pygame.image.load(join('Cycle_2/sprites',f'cheat{i}.png')).convert_alpha(), (80,80)) for i in range(1, 5)]
 
 #define colours for random rectangles
 GREEN = (0, 255, 0)
@@ -38,7 +38,7 @@ BLACK = (0,0,0)
 
 
 def game_loop():
-    playerInst = Player(WIDTH, LENGTH, player_images)
+    playerInst = Player(WIDTH, LENGTH)
     all_sprites = pygame.sprite.Group()
     all_sprites.add(playerInst)
     
@@ -57,10 +57,6 @@ def game_loop():
     powerup_duration = 2000  # 5 seconds for power-up effect
     invincible = False
     
-
-    #character settings   
-    lives = 3
-    speed = 7
     
     # for the background
     x = 0
@@ -111,23 +107,8 @@ def game_loop():
         obstacle_group.update()
         powerup_group.update()
                     
-        #Movement
-        keys = pygame.key.get_pressed()
-        #condition for when player gets near finish line
-        if stop_moving == False:
-            if keys[pygame.K_w]:
-                playerInst.rect.y -= speed
-            if keys[pygame.K_s]:
-                playerInst.rect.y += speed
-        
-        if keys[pygame.K_a]:
-                playerInst.rect.x -= speed
-        if keys[pygame.K_d]:
-                playerInst.rect.x += speed
-            
-        #Borders
-        playerInst.rect.x = max(0, min(WIDTH - playerInst.rect.width, playerInst.rect.x))
-        playerInst.rect.y = max(0, min(LENGTH - playerInst.rect.height, playerInst.rect.y))
+        # #Movement
+        playerInst.move()
                     
         # Scrolling background
         y += 6  # How fast it scrolls
@@ -136,7 +117,7 @@ def game_loop():
         if finish_line_y > -500:
             game_finished = True
         if finish_line_y > -100:
-            stop_moving = True
+            playerInst.stop_moving = True
             playerInst.rect.y -= 5
             
         if y >= LENGTH:
@@ -157,7 +138,7 @@ def game_loop():
             for obstacle in collided_obstacles:
                 obstacle.kill()  # remove obstacle after hitting it
                 pygame.mixer.Sound.play(hit_sound)
-                lives -= 1
+                playerInst.lives -= 1
             
             
         collided_powerups = pygame.sprite.spritecollide(playerInst, powerup_group, dokill=False)
@@ -196,13 +177,13 @@ def game_loop():
        
        
         # Check if lives ran out
-        if lives <= 0:
+        if playerInst.lives <= 0:
             pygame.mixer.Sound.play(death_sound)
             screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
             
         # Display lives
-        lives_text = pygame.font.SysFont('Comic Sans MS', 50)
-        text_surface = lives_text.render('Lives: ' + str(lives), False, (0, 255, 0))
+        lives_text = pygame.font.SysFont('Comic Sans MS', 30)
+        text_surface = lives_text.render('Lives: ' + str(playerInst.lives), False, (0, 255, 0))
         window.blit(text_surface, (5, 560)) 
 
         # Displays score/Distance traveled
