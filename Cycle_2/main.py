@@ -87,7 +87,7 @@ def game_loop():
             game_speed += 0.6  #how fast the background moves
             obstacle_speed += 0.3 #obstacles --
             powerup_speed += 0.3  #powerups --  both of these need to be half the game speed to align
-            speed += 0.6  # player speed gets faster to compensate
+            playerInst.speed += 0.6  # player speed gets faster to compensate
             start_time = current_time  # loop
 
         

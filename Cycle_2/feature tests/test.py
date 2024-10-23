@@ -1,4 +1,7 @@
 import unittest
+import sys
+
+from .. import player
 
 class TestStringMethods(unittest.TestCase):
 
@@ -15,6 +18,13 @@ class TestStringMethods(unittest.TestCase):
         # check that s.split fails when the separator is not a string
         with self.assertRaises(TypeError):
             s.split(2)
+
+class TestPlayerAttributes(unittest.TestCase):
+
+    def test_lives(self):
+        testPlayer = Player(600,600)
+        testPlayer.lives = 3
+        self.assertEqual(testPlayer.lives == 3)
 
 if __name__ == '__main__':
     unittest.main()
