@@ -22,8 +22,8 @@ obstacle_speed = 3
 powerup_speed = 3
 game_speed = 6
 obstacle_interval = 600  # how fast obstacles spawn
-#powerup_interval = random.randint(2000, 5000)
-powerup_interval = 2000
+powerup_interval = random.randint(12000, 15000)
+#powerup_interval = 2000
 
 death_sound = pygame.mixer.Sound(join("Cycle_2/audio","deathSound.wav"))
 hit_sound = pygame.mixer.Sound(join('Cycle_2/audio',"hit.wav"))
@@ -37,7 +37,9 @@ BLUE = (0, 0, 255)
 BLACK = (0,0,0)
 
 
+
 def game_loop():
+    global game_speed, obstacle_speed, powerup_speed
     playerInst = Player(WIDTH, LENGTH)
     all_sprites = pygame.sprite.Group()
     all_sprites.add(playerInst)
@@ -66,16 +68,29 @@ def game_loop():
     z = 0
     
     #finishline, change both because total_distance is needed for progress bar
-    finish_line_y = -4000
-    total_distance = -4000
+    finish_line_y = -30000
+    total_distance = -30000
       
     game_finished = False
     stop_moving = False
+    
+    start_time = time.time()
+    speedup_interval = 10  #every 10 seconds game gets faster
     
     running = True
     while running:
         timer.tick(fps)
         current_time = time.time()
+        
+        #for the game getting faster every set time
+        if(current_time - start_time >= speedup_interval):
+            game_speed += 0.6  #how fast the background moves
+            obstacle_speed += 0.3 #obstacles --
+            powerup_speed += 0.3  #powerups --  both of these need to be half the game speed to align
+            speed += 0.6  # player speed gets faster to compensate
+            start_time = current_time  # loop
+
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -100,9 +115,7 @@ def game_loop():
                         all_sprites.add(new_powerup)
                         powerup_group.add(new_powerup)
                         powerup_spawned = True  # Exit the loop after successful spawn
-                    else:
-                        # Optional: You could also reposition the power-up here if needed
-                        print("Power-up repositioned due to collision with obstacle.")
+                    
         
         obstacle_group.update()
         powerup_group.update()
@@ -111,7 +124,7 @@ def game_loop():
         playerInst.move()
                     
         # Scrolling background
-        y += 6  # How fast it scrolls
+        y += game_speed  # How fast it scrolls
         if finish_line_y < -5:
             finish_line_y += 6
         if finish_line_y > -500:
