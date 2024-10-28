@@ -44,7 +44,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         # Condition for when player gets near finish line
-        if self.stop_moving == False:
+        if not self.stop_moving:
             if keys[pygame.K_w]:
                 self.rect.y -= self.speed
             if keys[pygame.K_s]:
