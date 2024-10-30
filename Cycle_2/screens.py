@@ -2,6 +2,8 @@ import pygame
 import sys
 import random
 import time
+import cv2
+from os.path import join
 
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
@@ -33,7 +35,7 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     
     while True:
-        window.fill(RED)
+        
         start_surface = my_font.render('Awesome Cross V2', False, (0, 0, 0)) #play
         start_rect = start_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(start_surface, start_rect) 
@@ -46,6 +48,7 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_clicked(event.pos):
+                    cutscene(join('Cycle_2',"testvideo.mp4"), window)
                     game_loop()
                 if high_score_button.is_clicked(event.pos):
                     high_score_screen(WIDTH, LENGTH, window, game_loop)
@@ -118,3 +121,47 @@ def high_score_screen(WIDTH, LENGTH, window, game_loop):
         pygame.display.flip()
         pygame.time.Clock().tick(fps)
 
+
+def cutscene(video_path, window):
+    # videocapture thing from cv2
+    cap = cv2.VideoCapture(join('Cycle_2',"testvideo.mp4"))
+
+    clock = pygame.time.Clock()
+    fps = 30  
+
+    #when the video is running
+    while cap.isOpened():
+        ret, frame = cap.read()
+        
+        # if no frames read, the video ends
+        if not ret:
+            break
+        
+        #if you need to rotate the video, use this
+        #frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        
+        # convert to RGB
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        
+        # pygame surface
+        frame_surface = pygame.surfarray.make_surface(frame_rgb)
+        
+        # if you need to scale it
+        frame_surface = pygame.transform.scale(frame_surface, (window.get_width(), window.get_height()))
+        
+        # Display to window
+        window.blit(frame_surface, (0, 0))
+        pygame.display.flip()
+        
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        
+        clock.tick(fps)
+    
+    # release and close video after played
+    cap.release()
+    pygame.display.flip()
+    

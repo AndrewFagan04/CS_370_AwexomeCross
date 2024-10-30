@@ -8,9 +8,9 @@ from powerups import Invincibility
 from OSD_elements import *
 import screens
 from os.path import join
+import cv2
 pygame.init()
 pygame.font.init()
-
 #the screen
 WIDTH = 600
 LENGTH = 600
@@ -74,6 +74,7 @@ def game_loop():
     stop_moving = False
     
     start_time = time.time()
+    speedup_interval = 3 #every 10 seconds game gets faster
     speedup_interval = 10  #every 10 seconds game gets faster
 
     # Creates progress bar object
@@ -165,7 +166,7 @@ def game_loop():
         if powerup_active:
             current_ticks = pygame.time.get_ticks()
             if current_ticks - powerup_start_time < powerup_duration:
-                y += game_speed * 2  # Example effect: double speed
+                y += game_speed * 1.3  # Example effect: double speed
                 
                 invincible = True
                 for obstacle in obstacle_group:
