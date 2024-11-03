@@ -89,6 +89,10 @@ def game_loop():
             powerup_speed += 0.3  #powerups --  both of these need to be half the game speed to align
             playerInst.speed += 0.6  # player speed gets faster to compensate
             start_time = current_time  # loop
+            for obstacle in obstacle_group:
+                obstacle.speed = obstacle_speed
+            for powerup in powerup_group:
+                powerup.speed = powerup_speed
 
         
         for event in pygame.event.get():
