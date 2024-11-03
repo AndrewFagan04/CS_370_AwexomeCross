@@ -5,6 +5,7 @@ import time
 from player import Player
 from obstacle import Obstacle
 from powerups import Invincibility
+from OSD_elements import *
 import screens
 from os.path import join
 import cv2
@@ -27,8 +28,6 @@ powerup_interval = random.randint(12000, 15000)
 
 death_sound = pygame.mixer.Sound(join("Cycle_2/audio","deathSound.wav"))
 hit_sound = pygame.mixer.Sound(join('Cycle_2/audio',"hit.wav"))
-
-#player_images = [pygame.transform.scale(pygame.image.load(join('Cycle_2/sprites',f'cheat{i}.png')).convert_alpha(), (80,80)) for i in range(1, 5)]
 
 #define colours for random rectangles
 GREEN = (0, 255, 0)
@@ -76,6 +75,10 @@ def game_loop():
     
     start_time = time.time()
     speedup_interval = 3 #every 10 seconds game gets faster
+    speedup_interval = 10  #every 10 seconds game gets faster
+
+    # Creates progress bar object
+    level_progress = progress_bar(WIDTH)
     
     running = True
     while running:
@@ -199,9 +202,7 @@ def game_loop():
             screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
             
         # Display lives
-        lives_text = pygame.font.SysFont('Comic Sans MS', 30)
-        text_surface = lives_text.render('Lives: ' + str(playerInst.lives), False, (0, 255, 0))
-        window.blit(text_surface, (5, 560)) 
+        lives.update_lives(playerInst,window)
 
         # Displays score/Distance traveled
         score_text = pygame.font.SysFont('Comic Sans MS', 20)
@@ -213,17 +214,9 @@ def game_loop():
         
          # Calculate progress
         progress = 1 - (finish_line_y / total_distance)
-        
-        # Draw progress bar
-        progress_bar_width = 200
-        progress_bar_height = 20
-        progress_bar_x = (WIDTH - progress_bar_width) // 2
-        progress_bar_y = 10
-        #draw white
-        pygame.draw.rect(window, (255, 255, 255), (progress_bar_x, progress_bar_y, progress_bar_width, progress_bar_height), 2)
-        #draw green (moving)
-        filled_width = int(progress * progress_bar_width)
-        pygame.draw.rect(window, (0, 255, 0), (progress_bar_x, progress_bar_y, filled_width, progress_bar_height))
+
+        # draws progress bar
+        level_progress.update_progress_bar(progress,window)
         
         
         pygame.display.flip()

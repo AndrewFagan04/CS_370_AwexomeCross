@@ -35,7 +35,7 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     
     while True:
-        window.fill(RED)
+        
         start_surface = my_font.render('Awesome Cross V2', False, (0, 0, 0)) #play
         start_rect = start_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(start_surface, start_rect) 
