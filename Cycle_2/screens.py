@@ -4,18 +4,18 @@ import random
 import time
 import cv2
 from main import *
+from os.path import join
 
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
+WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+YELLOW = (255, 222, 33)
 fps = 60
 
-backgroundW = pygame.image.load('Cycle_2/sprites',"AwexomeCrossTitleScreenY.png").convert
-backgroundY = pygame.image.load('Cycle_2/sprites',"AwexomeCrossTitleScreenW.png").convert
-
-window.blit(backgroundW, (0,0))
-window.blit(backgroundY, (0,0))
+backgroundW = pygame.image.load(join("Cycle_2/sprites","AwexomeCrossTitleScreenY.png"))
+backgroundY = pygame.image.load(join("Cycle_2/sprites","AwexomeCrossTitleScreenW.png"))
 
 class Button:
     def __init__(self, x, y, width, height, color, play):
@@ -26,7 +26,7 @@ class Button:
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)
-        play_surf = self.font.render(self.play, True, BLUE)
+        play_surf = self.font.render(self.play, True, WHITE)
         play_rect = play_surf.get_rect(center=self.rect.center)
         surface.blit(play_surf, play_rect)
 
@@ -34,19 +34,25 @@ class Button:
         return self.rect.collidepoint(pos)
 
 def show_start_screen(WIDTH, LENGTH, window, game_loop):
-    play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play")
+    play_button = Button(WIDTH // 2 - 250, LENGTH // 2 + 100, 200, 50, BLACK, "Play")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
 
-    high_score_button = Button(WIDTH // 2 - 100, LENGTH // 2 + 50, 200, 50, GREEN, "High Scores")
+    high_score_button = Button(WIDTH // 2 + 50, LENGTH // 2 + 100, 200, 50, BLACK, "High Scores")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     
     while True:
-        start_surface = my_font.render('Awesome Cross V2', False, (0, 0, 0)) #play
-        start_rect = start_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
-        window.blit(start_surface, start_rect) 
+        window.fill(RED)
+        window.blit(backgroundW, (0,0))
         play_button.draw(window)
         high_score_button.draw(window)
-        
+        pygame.display.update()
+        time.sleep(.1)
+        window.blit(backgroundY, (0,0))
+        play_button.draw(window)
+        high_score_button.draw(window)
+        pygame.display.update()
+        time.sleep(.1)
+    
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
