@@ -14,6 +14,7 @@ class Player(pygame.sprite.Sprite):
         # Player Attributes
         self.speed = 7
         self.lives = 3
+        self.score = 0
         
         # Window Width + Height
         self.winWIDTH = WIDTH
@@ -44,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         # Condition for when player gets near finish line
-        if self.stop_moving == False:
+        if not self.stop_moving:
             if keys[pygame.K_w]:
                 self.rect.y -= self.speed
             if keys[pygame.K_s]:
@@ -58,3 +59,5 @@ class Player(pygame.sprite.Sprite):
         # Borders for player
         self.rect.x = max(0, min(self.winWIDTH - self.rect.width, self.rect.x))
         self.rect.y = max(0, min(self.winLENGTH - self.rect.height, self.rect.y))
+
+        
