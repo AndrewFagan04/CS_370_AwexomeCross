@@ -3,13 +3,19 @@ import sys
 import random
 import time
 import cv2
-from os.path import join
+from main import *
 
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 fps = 60
+
+backgroundW = pygame.image.load('Cycle_2/sprites',"AwexomeCrossTitleScreenY.png").convert
+backgroundY = pygame.image.load('Cycle_2/sprites',"AwexomeCrossTitleScreenW.png").convert
+
+window.blit(backgroundW, (0,0))
+window.blit(backgroundY, (0,0))
 
 class Button:
     def __init__(self, x, y, width, height, color, play):
@@ -35,7 +41,6 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     
     while True:
-        
         start_surface = my_font.render('Awesome Cross V2', False, (0, 0, 0)) #play
         start_rect = start_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(start_surface, start_rect) 
