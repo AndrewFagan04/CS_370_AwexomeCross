@@ -28,7 +28,7 @@ class ExtraLives(pygame.sprite.Sprite):
         #self.image = pygame.image.load("C:/Users/Danyal/CS_370_danyalm/CS_370_AwexomeCross/Cycle/sprites/coin.png")
         self.image = pygame.image.load(join('Cycle_2/sprites',"heart.png"))
         self.image = self.image.convert_alpha()
-        self.image = pygame.transform.scale(self.image, (100, 100))
+        self.image = pygame.transform.scale(self.image, (130, 100))
 
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(0, WIDTH - self.rect.width) 

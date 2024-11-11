@@ -24,8 +24,9 @@ obstacle_speed = 3
 powerup_speed = 3
 game_speed = 6
 obstacle_interval = 600  # how fast obstacles spawn
-invincible_interval = random.randint(12000, 15000)
-extra_interval = random.randint(12000, 15000)
+invincible_interval = random.randint(11000, 15000)
+extra_interval = random.randint(18000, 22000)
+
 
 
 death_sound = pygame.mixer.Sound(join("Cycle_2/audio","deathSound.wav"))
@@ -116,9 +117,20 @@ def game_loop():
                 all_sprites.add(new_obstacle)  
                 obstacle_group.add(new_obstacle)
             elif event.type == extra_event and not game_finished:
-                new_extra = ExtraLives(powerup_speed, WIDTH, LENGTH)
-                all_sprites.add(new_extra)
-                extra_group.add(new_extra)   
+                powerup_spawned = False
+                while not powerup_spawned:
+                    # make powerup
+                    new_extra = ExtraLives(powerup_speed, WIDTH, LENGTH)
+                    
+                    # check collision with obstacle
+                    collided_obstacles = pygame.sprite.spritecollide(new_extra, obstacle_group, dokill=False)
+                    if collided_obstacles:
+                        new_extra.kill()
+                    # If no collision, add the power-up to the groups and break the loop
+                    if not collided_obstacles:
+                        all_sprites.add(new_extra)
+                        extra_group.add(new_extra)
+                        powerup_spawned = True  # Exit the loop after successful spawn
             elif event.type == invincible_event and not game_finished:
                 powerup_spawned = False
                 while not powerup_spawned:
