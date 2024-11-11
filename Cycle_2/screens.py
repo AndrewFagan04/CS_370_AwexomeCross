@@ -16,6 +16,7 @@ fps = 60
 
 backgroundW = pygame.image.load(join("Cycle_2/sprites","AwexomeCrossTitleScreenY.png"))
 backgroundY = pygame.image.load(join("Cycle_2/sprites","AwexomeCrossTitleScreenW.png"))
+backgroundS = pygame.image.load(join("Cycle_2/sprites","space.png"))
 
 class Button:
     def __init__(self, x, y, width, height, color, play):
@@ -34,10 +35,10 @@ class Button:
         return self.rect.collidepoint(pos)
 
 def show_start_screen(WIDTH, LENGTH, window, game_loop):
-    play_button = Button(WIDTH // 2 - 250, LENGTH // 2 + 100, 200, 50, BLACK, "Play")
+    play_button = Button(WIDTH // 2 - 250, LENGTH // 2 + 100, 200, 50, GREEN, "Play")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
 
-    high_score_button = Button(WIDTH // 2 + 50, LENGTH // 2 + 100, 200, 50, BLACK, "High Scores")
+    high_score_button = Button(WIDTH // 2 + 50, LENGTH // 2 + 100, 200, 50, BLUE, "High Scores")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     
     while True:
@@ -69,11 +70,12 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
  
       
 def game_over_screen(WIDTH, LENGTH, window, game_loop):
-    replay_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Try again")
+    replay_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, RED, "Try again")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     while True:
-        window.fill(RED)
-        play_surface = my_font.render('Game Over!', False, (0, 0, 0))
+        window.fill(BLACK)
+        window.blit(backgroundS, (0,0))
+        play_surface = my_font.render('Game Over!', False, RED)
         play_rect = play_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(play_surface, play_rect)
         replay_button.draw(window)
@@ -93,7 +95,8 @@ def you_win_screen(WIDTH, LENGTH, window, game_loop):
     play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play Again")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     while True:
-        window.fill(RED)
+        window.fill(BLACK)
+        window.blit(backgroundS, (0,0))
         play_surface = my_font.render('You Win!', False, (0, 0, 0))
         play_rect = play_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(play_surface, play_rect)
@@ -111,12 +114,12 @@ def you_win_screen(WIDTH, LENGTH, window, game_loop):
         pygame.time.Clock().tick(fps)
 
 def high_score_screen(WIDTH, LENGTH, window, game_loop):
-    start_screen_button = Button(WIDTH / 2 - 100, LENGTH - 100, 200, 50, GREEN, "Return")
+    start_screen_button = Button(WIDTH / 2 - 100, LENGTH - 100, 200, 50, RED, "Return")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     
     while True:
-        window.fill(RED)
-        score_surface = my_font.render('High Scores', False, (0, 0, 0)) #play
+        window.fill(BLACK)
+        score_surface = my_font.render('High Scores', False, WHITE) #play
         score_rect = score_surface.get_rect(center = (WIDTH/2, 50)) #created rect for the play to center it
         window.blit(score_surface, score_rect) 
         start_screen_button.draw(window)
@@ -135,21 +138,29 @@ def high_score_screen(WIDTH, LENGTH, window, game_loop):
 
 def cutscene(video_path, window):
     # videocapture thing from cv2
-    cap = cv2.VideoCapture(join('Cycle_2',"testvideo.mp4"))
+    cap = cv2.VideoCapture(join('Cycle_2',"AwexomeCrossIntroCOMPETED.mp4"))
 
     clock = pygame.time.Clock()
     fps = 30  
 
+
+
     #when the video is running
     while cap.isOpened():
         ret, frame = cap.read()
+
         
         # if no frames read, the video ends
         if not ret:
             break
         
         #if you need to rotate the video, use this
-        #frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
+        
+        #WIP
+        #flips the video
+        frame = cv2.flip(frame, 0)
         
         # convert to RGB
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -158,7 +169,7 @@ def cutscene(video_path, window):
         frame_surface = pygame.surfarray.make_surface(frame_rgb)
         
         # if you need to scale it
-        frame_surface = pygame.transform.scale(frame_surface, (window.get_width(), window.get_height()))
+        frame_surface = pygame.transform.scale(frame_surface, (600, 600))
         
         # Display to window
         window.blit(frame_surface, (0, 0))
