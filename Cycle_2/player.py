@@ -46,14 +46,14 @@ class Player(pygame.sprite.Sprite):
 
         # Condition for when player gets near finish line
         if not self.stop_moving:
-            if keys[pygame.K_w]:
+            if keys[pygame.K_w] or keys[pygame.K_UP]:
                 self.rect.y -= self.speed
-            if keys[pygame.K_s]:
+            if keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 self.rect.y += self.speed
             
-        if keys[pygame.K_a]:
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
                 self.rect.x -= self.speed
-        if keys[pygame.K_d]:
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                 self.rect.x += self.speed
 
         # Borders for player
