@@ -169,10 +169,10 @@ def cutscene(video_path, window):
         frame_surface = pygame.surfarray.make_surface(frame_rgb)
         
         # if you need to scale it
-        frame_surface = pygame.transform.scale(frame_surface, (600, 600))
+        frame_surface = pygame.transform.scale(frame_surface, (900, 700))
         
         # Display to window
-        window.blit(frame_surface, (0, 0))
+        window.blit(frame_surface, (-150, -50))
         pygame.display.flip()
         
 
