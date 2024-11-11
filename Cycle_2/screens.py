@@ -132,6 +132,19 @@ def high_score_screen(WIDTH, LENGTH, window, game_loop):
         pygame.display.flip()
         pygame.time.Clock().tick(fps)
 
+def add_high_score(score_list,score):
+    if(len(score_list) >= 5):
+        for i in range (len(score_list)):
+            if(i < len(score_list)):
+                if(score > score_list[i]):
+                    score_list.pop()
+                    score_list.insert(i,score)
+                    break
+    else:
+        score_list.append(score)
+    score_list.sort()
+    score_list.reverse()
+
 
 def cutscene(video_path, window):
     # videocapture thing from cv2

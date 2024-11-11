@@ -26,6 +26,7 @@ game_speed = 6
 obstacle_interval = 600  # how fast obstacles spawn
 invincible_interval = random.randint(11000, 15000)
 extra_interval = random.randint(18000, 22000)
+high_scores = []
 
 
 
@@ -154,6 +155,8 @@ def game_loop():
                     
         # #Movement
         playerInst.move()
+
+
                     
         # Scrolling background
         y += game_speed  # How fast it scrolls
@@ -164,6 +167,7 @@ def game_loop():
         if finish_line_y > -100:
             playerInst.stop_moving = True
             playerInst.rect.y -= 5
+            #screens.add_high_score(high_scores,playerInst.score)
             
         if y >= LENGTH:
             y = 0
@@ -190,6 +194,7 @@ def game_loop():
         for powerup in collided_extra:
             powerup.kill()
             playerInst.lives += 1
+            playerInst.score += 5000 #gets extra points for collecting powerup
             
             
         collided_powerups = pygame.sprite.spritecollide(playerInst, invincible_group, dokill=False)
@@ -197,6 +202,7 @@ def game_loop():
             powerup.kill()
             invincible_active = True
             invincible_start_time = pygame.time.get_ticks()
+            playerInst.score += 5000 #gets extra points for collecting powerup
             
         if invincible_active:
             current_ticks = pygame.time.get_ticks()
@@ -234,15 +240,19 @@ def game_loop():
         # Check if lives ran out
         if playerInst.lives <= 0:
             pygame.mixer.Sound.play(death_sound)
+            #screens.add_high_score(high_scores,playerInst.score)
             screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
+            
             
         # Display lives
         lives.update_lives(playerInst,window)
 
+        #Updates score
+        if(playerInst.stop_moving == False):
+            playerInst.score += game_speed
+
         # Displays score/Distance traveled
-        score_text = pygame.font.SysFont('Comic Sans MS', 20)
-        score_surface = score_text.render('Score: ' + str(abs(total_distance) + finish_line_y), False, 'yellow')
-        window.blit(score_surface, (WIDTH - 150,5))
+        score.display_score(playerInst,window,WIDTH)
         
         # Draw finish line
         pygame.draw.rect(window, BLUE, finish_line)
@@ -255,6 +265,7 @@ def game_loop():
         
         
         pygame.display.flip()
+        print(high_scores)
         
 def main():
     while True:

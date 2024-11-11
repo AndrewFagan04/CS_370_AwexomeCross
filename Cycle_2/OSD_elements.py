@@ -25,3 +25,9 @@ class progress_bar:
         #draw green (moving)
         filled_width = int(progress * self.progress_bar_width)
         pygame.draw.rect(window, (0, 255, 0), (self.progress_bar_x, self.progress_bar_y, filled_width, self.progress_bar_height))
+
+class score:
+    def display_score(playerInst,window,WIDTH):
+        score_text = pygame.font.SysFont('Comic Sans MS', 20)
+        score_surface = score_text.render('Score: ' + str(int(playerInst.score)), False, 'yellow')
+        window.blit(score_surface, (WIDTH - 150,5))
