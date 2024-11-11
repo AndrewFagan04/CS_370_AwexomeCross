@@ -258,7 +258,7 @@ def game_loop():
         
 def main():
     while True:
-        #screens.show_start_screen(WIDTH, LENGTH, window, game_loop)
+        screens.show_start_screen(WIDTH, LENGTH, window, game_loop)
         game_loop()
         
 if __name__ == "__main__":
