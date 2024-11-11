@@ -5,6 +5,7 @@ import time
 from player import Player
 from obstacle import Obstacle
 from powerups import Invincibility
+from powerups import ExtraLives
 from OSD_elements import *
 import screens
 from os.path import join
@@ -23,8 +24,9 @@ obstacle_speed = 3
 powerup_speed = 3
 game_speed = 6
 obstacle_interval = 600  # how fast obstacles spawn
-powerup_interval = random.randint(12000, 15000)
-#powerup_interval = 2000
+invincible_interval = random.randint(12000, 15000)
+extra_interval = random.randint(12000, 15000)
+
 
 death_sound = pygame.mixer.Sound(join("Cycle_2/audio","deathSound.wav"))
 hit_sound = pygame.mixer.Sound(join('Cycle_2/audio',"hit.wav"))
@@ -44,18 +46,22 @@ def game_loop():
     all_sprites.add(playerInst)
     
     obstacle_group = pygame.sprite.Group()
-    powerup_group = pygame.sprite.Group()
+    invincible_group = pygame.sprite.Group()
+    extra_group = pygame.sprite.Group()
+    
     
     obstacle_event = pygame.USEREVENT + 1
-    powerup_event = pygame.USEREVENT + 2
+    invincible_event = pygame.USEREVENT + 2
+    extra_event = pygame.USEREVENT + 3
 
     pygame.time.set_timer(obstacle_event, obstacle_interval)
-    pygame.time.set_timer(powerup_event, powerup_interval)
+    pygame.time.set_timer(invincible_event, invincible_interval)
+    pygame.time.set_timer(extra_event, extra_interval)
     
     # Power-up state tracking
-    powerup_active = False
-    powerup_start = 0
-    powerup_duration = 2000  # 5 seconds for power-up effect
+    invincible_active = False
+    invincible_start = 0
+    invincible_duration = 2000  # 5 seconds for power-up effect
     invincible = False
     
     
@@ -94,7 +100,9 @@ def game_loop():
             start_time = current_time  # loop
             for obstacle in obstacle_group:
                 obstacle.speed = obstacle_speed
-            for powerup in powerup_group:
+            for powerup in invincible_group:
+                powerup.speed = powerup_speed
+            for powerup in extra_group:
                 powerup.speed = powerup_speed
 
         
@@ -107,25 +115,30 @@ def game_loop():
                 new_obstacle = Obstacle(obstacle_speed, WIDTH, LENGTH)
                 all_sprites.add(new_obstacle)  
                 obstacle_group.add(new_obstacle)
-            elif event.type == powerup_event and not game_finished:
+            elif event.type == extra_event and not game_finished:
+                new_extra = ExtraLives(powerup_speed, WIDTH, LENGTH)
+                all_sprites.add(new_extra)
+                extra_group.add(new_extra)   
+            elif event.type == invincible_event and not game_finished:
                 powerup_spawned = False
                 while not powerup_spawned:
                     # make powerup
-                    new_powerup = Invincibility(powerup_speed, WIDTH, LENGTH)
+                    new_invincible = Invincibility(powerup_speed, WIDTH, LENGTH)
                     
                     # check collision with obstacle
-                    collided_obstacles = pygame.sprite.spritecollide(new_powerup, obstacle_group, dokill=False)
+                    collided_obstacles = pygame.sprite.spritecollide(new_invincible, obstacle_group, dokill=False)
                     if collided_obstacles:
-                        new_powerup.kill()
+                        new_invincible.kill()
                     # If no collision, add the power-up to the groups and break the loop
                     if not collided_obstacles:
-                        all_sprites.add(new_powerup)
-                        powerup_group.add(new_powerup)
+                        all_sprites.add(new_invincible)
+                        invincible_group.add(new_invincible)
                         powerup_spawned = True  # Exit the loop after successful spawn
                     
         
         obstacle_group.update()
-        powerup_group.update()
+        invincible_group.update()
+        extra_group.update()
                     
         # #Movement
         playerInst.move()
@@ -148,7 +161,8 @@ def game_loop():
         # draw sprites
         all_sprites.update()
         obstacle_group.draw(window)
-        powerup_group.draw(window)
+        invincible_group.draw(window)
+        extra_group.draw(window)
         window.blit(playerInst.image, playerInst.rect)
 
         
@@ -159,32 +173,41 @@ def game_loop():
                 obstacle.kill()  # remove obstacle after hitting it
                 pygame.mixer.Sound.play(hit_sound)
                 playerInst.lives -= 1
+                
+        collided_extra = pygame.sprite.spritecollide(playerInst, extra_group, dokill=False)
+        for powerup in collided_extra:
+            powerup.kill()
+            playerInst.lives += 1
             
             
-        collided_powerups = pygame.sprite.spritecollide(playerInst, powerup_group, dokill=False)
+        collided_powerups = pygame.sprite.spritecollide(playerInst, invincible_group, dokill=False)
         for powerup in collided_powerups:
             powerup.kill()
-            powerup_active = True
-            powerup_start_time = pygame.time.get_ticks()
+            invincible_active = True
+            invincible_start_time = pygame.time.get_ticks()
             
-        if powerup_active:
+        if invincible_active:
             current_ticks = pygame.time.get_ticks()
-            if current_ticks - powerup_start_time < powerup_duration:
+            if current_ticks - invincible_start_time < invincible_duration:
                 y += game_speed * 1.3  # Example effect: double speed
                 
                 invincible = True
                 for obstacle in obstacle_group:
                     obstacle.speed = obstacle_speed * 2
-                for powerup in powerup_group:
+                for powerup in invincible_group:
+                    powerup.speed = powerup_speed * 2
+                for powerup in extra_group:
                     powerup.speed = powerup_speed * 2
             else:
-                powerup_active = False
+                invincible_active = False
                 invincible = False
                 
                 y += 6  # Reset speed to normal
                 for obstacle in obstacle_group:
                     obstacle.speed = obstacle_speed 
-                for powerup in powerup_group:
+                for powerup in invincible_group:
+                    powerup.speed = powerup_speed 
+                for powerup in extra_group:
                     powerup.speed = powerup_speed 
             
     
