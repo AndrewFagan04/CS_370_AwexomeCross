@@ -70,7 +70,8 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
  
       
 def game_over_screen(WIDTH, LENGTH, window, game_loop):
-    replay_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, RED, "Try again")
+    replay_button = Button(WIDTH // 2 - 250, LENGTH // 2 - 25, 200, 50, RED, "Try again")
+    menu_button = Button(WIDTH // 2 + 50, LENGTH // 2 - 25, 200, 50, RED, "Main Menu")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     while True:
         window.fill(BLACK)
@@ -79,6 +80,7 @@ def game_over_screen(WIDTH, LENGTH, window, game_loop):
         play_rect = play_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(play_surface, play_rect)
         replay_button.draw(window)
+        menu_button.draw(window)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -87,6 +89,9 @@ def game_over_screen(WIDTH, LENGTH, window, game_loop):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if replay_button.is_clicked(event.pos):
                     game_loop() 
+                if menu_button.is_clicked(event.pos):
+                    show_start_screen(WIDTH, LENGTH, window, game_loop) 
+            
         
         pygame.display.flip()
         pygame.time.Clock().tick(fps)
@@ -137,12 +142,9 @@ def high_score_screen(WIDTH, LENGTH, window, game_loop):
 
 def add_high_score(score_list,score):
     if(len(score_list) >= 5):
-        for i in range (len(score_list)):
-            if(i < len(score_list)):
-                if(score > score_list[i]):
-                    score_list.pop()
-                    score_list.insert(i,score)
-                    break
+        if(score > score_list[4]):
+            score_list.pop()
+            score_list.append(score)
     else:
         score_list.append(score)
     score_list.sort()

@@ -167,7 +167,7 @@ def game_loop():
         if finish_line_y > -100:
             playerInst.stop_moving = True
             playerInst.rect.y -= 5
-            #screens.add_high_score(high_scores,playerInst.score)
+            
             
         if y >= LENGTH:
             y = 0
@@ -233,6 +233,7 @@ def game_loop():
         finish_line = pygame.Rect(0, finish_line_y, 800, 25)
         
         if playerInst.rect.colliderect(finish_line):
+            screens.add_high_score(high_scores,playerInst.score)
             screens.you_win_screen(WIDTH, LENGTH, window, game_loop)
             
        
@@ -240,7 +241,7 @@ def game_loop():
         # Check if lives ran out
         if playerInst.lives <= 0:
             pygame.mixer.Sound.play(death_sound)
-            #screens.add_high_score(high_scores,playerInst.score)
+            screens.add_high_score(high_scores,playerInst.score)
             screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
             
             
@@ -265,7 +266,7 @@ def game_loop():
         
         
         pygame.display.flip()
-        print(high_scores)
+        #print(high_scores)
         
 def main():
     while True:
