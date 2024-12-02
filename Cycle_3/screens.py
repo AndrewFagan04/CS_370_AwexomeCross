@@ -17,6 +17,7 @@ fps = 60
 backgroundW = pygame.image.load(join("Cycle_3/sprites","AwexomeCrossTitleScreenY.png"))
 backgroundY = pygame.image.load(join("Cycle_3/sprites","AwexomeCrossTitleScreenW.png"))
 backgroundS = pygame.image.load(join("Cycle_3/sprites","space.png"))
+moon = pygame.image.load(join("Cycle_3/sprites","8-bitMoonEND.png"))
 
 class Button:
     def __init__(self, x, y, width, height, color, play):
@@ -71,7 +72,7 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
       
 def game_over_screen(WIDTH, LENGTH, window, game_loop):
     replay_button = Button(WIDTH // 2 - 250, LENGTH // 2 - 25, 200, 50, RED, "Try again")
-    menu_button = Button(WIDTH // 2 + 50, LENGTH // 2 - 25, 200, 50, RED, "Main Menu")
+    menu_button = Button(WIDTH // 2 + 50, LENGTH // 2 - 25, 200, 50, BLUE, "Main Menu")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     while True:
         window.fill(BLACK)
@@ -97,15 +98,18 @@ def game_over_screen(WIDTH, LENGTH, window, game_loop):
         pygame.time.Clock().tick(fps)
         
 def you_win_screen(WIDTH, LENGTH, window, game_loop):
-    play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play Again")
+    play_button = Button(WIDTH // 2 - 250, LENGTH // 2 - 25, 200, 50, GREEN, "Play Again")
+    menu_button = Button(WIDTH // 2 + 50, LENGTH // 2 - 25, 200, 50, BLUE, "Main Menu")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     while True:
         window.fill(BLACK)
         window.blit(backgroundS, (0,0))
+        window.blit(moon, (75,400))
         play_surface = my_font.render('You Win!', False, (0, 0, 0))
         play_rect = play_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(play_surface, play_rect)
         play_button.draw(window)
+        menu_button.draw(window)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

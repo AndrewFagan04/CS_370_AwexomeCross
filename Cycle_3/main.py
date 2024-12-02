@@ -29,6 +29,7 @@ extra_interval = random.randint(18000, 22000)
 high_scores = []
 
 
+finLine = pygame.image.load(join("Cycle_3/sprites","8-bitMoonFINISHLINE.png"))
 
 death_sound = pygame.mixer.Sound(join("Cycle_3/audio","deathSound.wav"))
 hit_sound = pygame.mixer.Sound(join('Cycle_3/audio',"hit.wav"))
@@ -232,6 +233,7 @@ def game_loop():
         # Finish line
         finish_line = pygame.Rect(0, finish_line_y, 800, 25)
         
+        
         if playerInst.rect.colliderect(finish_line):
             screens.add_high_score(high_scores,playerInst.score)
             screens.you_win_screen(WIDTH, LENGTH, window, game_loop)
@@ -257,6 +259,7 @@ def game_loop():
         
         # Draw finish line
         pygame.draw.rect(window, BLUE, finish_line)
+        window.blit(finLine, (50,-50))
         
          # Calculate progress
         progress = 1 - (finish_line_y / total_distance)
