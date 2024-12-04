@@ -31,6 +31,8 @@ high_scores = []
 
 finLine = pygame.image.load(join("Cycle_3/sprites","8-bitMoonFINISHLINE.png"))
 
+
+
 death_sound = pygame.mixer.Sound(join("Cycle_3/audio","deathSound.wav"))
 hit_sound = pygame.mixer.Sound(join('Cycle_3/audio',"hit.wav"))
 
@@ -235,11 +237,15 @@ def game_loop():
         rect = finLine.get_rect()
 
         finish_line = pygame.Rect(0, finish_line_y, 800, 25)
+        finLineMoon = pygame.transform.scale(finLine, (finish_line.width, finish_line.height))
         
         
         if playerInst.rect.colliderect(finish_line):
             screens.add_high_score(high_scores,playerInst.score)
             screens.you_win_screen(WIDTH, LENGTH, window, game_loop)
+            obstacle_speed = 3
+            powerup_speed = 3
+            game_speed = 6
             
        
        
@@ -248,6 +254,9 @@ def game_loop():
             pygame.mixer.Sound.play(death_sound)
             screens.add_high_score(high_scores,playerInst.score)
             screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
+            obstacle_speed = 3
+            powerup_speed = 3
+            game_speed = 6
             
             
         # Display lives
@@ -262,6 +271,7 @@ def game_loop():
         
         # Draw finish line
         pygame.draw.rect(window, BLACK, finish_line)
+        window.blit(finLine, (75, finish_line_y))
         
         # Calculate progress
         progress = 1 - (finish_line_y / total_distance)

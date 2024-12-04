@@ -18,6 +18,7 @@ backgroundW = pygame.image.load(join("Cycle_3/sprites","AwexomeCrossTitleScreenY
 backgroundY = pygame.image.load(join("Cycle_3/sprites","AwexomeCrossTitleScreenW.png"))
 backgroundS = pygame.image.load(join("Cycle_3/sprites","space.png"))
 moon = pygame.image.load(join("Cycle_3/sprites","8-bitMoonEND.png"))
+finLine = pygame.image.load(join("Cycle_3/sprites","8-bitMoonFINISHLINE.png"))
 
 class Button:
     def __init__(self, x, y, width, height, color, play):
@@ -105,7 +106,7 @@ def you_win_screen(WIDTH, LENGTH, window, game_loop):
         window.fill(BLACK)
         window.blit(backgroundS, (0,0))
         window.blit(moon, (75,400))
-        play_surface = my_font.render('You Win!', False, (0, 0, 0))
+        play_surface = my_font.render('You Win!', False, YELLOW)
         play_rect = play_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(play_surface, play_rect)
         play_button.draw(window)
