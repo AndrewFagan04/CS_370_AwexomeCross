@@ -231,6 +231,9 @@ def game_loop():
             
     
         # Finish line
+        finLine.convert()
+        rect = finLine.get_rect()
+
         finish_line = pygame.Rect(0, finish_line_y, 800, 25)
         
         
@@ -258,10 +261,9 @@ def game_loop():
         score.display_score(playerInst,window,WIDTH)
         
         # Draw finish line
-        pygame.draw.rect(window, BLUE, finish_line)
-        window.blit(finLine, (50,-50))
+        pygame.draw.rect(window, BLACK, finish_line)
         
-         # Calculate progress
+        # Calculate progress
         progress = 1 - (finish_line_y / total_distance)
 
         # draws progress bar
