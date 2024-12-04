@@ -127,7 +127,7 @@ def you_win_screen(WIDTH, LENGTH, window, game_loop):
                 if endless_button.is_clicked(event.pos):
                     game_loop_endless()  # Start the endless mode
                 if menu_button.is_clicked(event.pos):
-                    screens.show_start_screen(WIDTH, LENGTH, window, game_loop)  # Go back to the main menu
+                    window.show_start_screen(WIDTH, LENGTH, window, game_loop)  # Go back to the main menu
         
         pygame.display.flip()
         pygame.time.Clock().tick(fps)
