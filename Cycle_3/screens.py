@@ -108,7 +108,7 @@ def you_win_screen(WIDTH, LENGTH, window, game_loop):
         window.fill(BLACK)
         window.blit(backgroundS, (0,0))
         window.blit(moon, (75,400))
-        play_surface = my_font.render('You Win!', False, (0, 0, 0))
+        play_surface = my_font.render('You Win!', False, YELLOW)
         play_rect = play_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(play_surface, play_rect)
         
