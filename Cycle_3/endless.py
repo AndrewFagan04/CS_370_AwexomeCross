@@ -30,8 +30,6 @@ high_scores = []
 
 
 
-
-
 death_sound = pygame.mixer.Sound(join("Cycle_3/audio","deathSound.wav"))
 hit_sound = pygame.mixer.Sound(join('Cycle_3/audio',"hit.wav"))
 
@@ -42,8 +40,7 @@ BLUE = (0, 0, 255)
 BLACK = (0,0,0)
 
 
-
-def game_loop():
+def game_loop_endless():
     global game_speed, obstacle_speed, powerup_speed
     playerInst = Player(WIDTH, LENGTH)
     all_sprites = pygame.sprite.Group()
@@ -52,7 +49,6 @@ def game_loop():
     obstacle_group = pygame.sprite.Group()
     invincible_group = pygame.sprite.Group()
     extra_group = pygame.sprite.Group()
-    
     
     obstacle_event = pygame.USEREVENT + 1
     invincible_event = pygame.USEREVENT + 2
@@ -68,7 +64,6 @@ def game_loop():
     invincible_duration = 2000  # 5 seconds for power-up effect
     invincible = False
     
-    
     # for the background
     x = 0
     y = 0
@@ -76,32 +71,30 @@ def game_loop():
     #random variable test
     z = 0
     
-    #finishline, change both because total_distance is needed for progress bar
+    # Remove finish_line and total_distance for endless mode
     finish_line_y = -30000
-    total_distance = -30000
+    total_distance = 100000  # You can set it as large as you want to simulate distance.
       
     game_finished = False
     stop_moving = False
     
     start_time = time.time()
-    speedup_interval = 3 #every 10 seconds game gets faster
-    speedup_interval = 10  #every 10 seconds game gets faster
+    speedup_interval = 10  # Every 10 seconds game gets faster
 
-    # Creates progress bar object
-    level_progress = progress_bar(WIDTH)
+   
     
     running = True
     while running:
         timer.tick(fps)
         current_time = time.time()
         
-        #for the game getting faster every set time
+        # Game speed increase over time
         if(current_time - start_time >= speedup_interval):
-            game_speed += 0.6  #how fast the background moves
-            obstacle_speed += 0.3 #obstacles --
-            powerup_speed += 0.3  #powerups --  both of these need to be half the game speed to align
-            playerInst.speed += 0.6  # player speed gets faster to compensate
-            start_time = current_time  # loop
+            game_speed += 0.6  # Speed of the background scroll
+            obstacle_speed += 0.3 # Speed of obstacles
+            powerup_speed += 0.3  # Speed of powerups
+            playerInst.speed += 0.6  # Speed of the player
+            start_time = current_time  # Loop the speed increase
             for obstacle in obstacle_group:
                 obstacle.speed = obstacle_speed
             for powerup in invincible_group:
@@ -115,17 +108,17 @@ def game_loop():
                 pygame.quit()
                 sys.exit()
             elif event.type == obstacle_event and not game_finished:
-                #creating obstacle
+                # Creating obstacle
                 new_obstacle = Obstacle(obstacle_speed, WIDTH, LENGTH)
                 all_sprites.add(new_obstacle)  
                 obstacle_group.add(new_obstacle)
             elif event.type == extra_event and not game_finished:
                 powerup_spawned = False
                 while not powerup_spawned:
-                    # make powerup
+                    # Make powerup
                     new_extra = ExtraLives(powerup_speed, WIDTH, LENGTH)
                     
-                    # check collision with obstacle
+                    # Check collision with obstacle
                     collided_obstacles = pygame.sprite.spritecollide(new_extra, obstacle_group, dokill=False)
                     if collided_obstacles:
                         new_extra.kill()
@@ -137,10 +130,10 @@ def game_loop():
             elif event.type == invincible_event and not game_finished:
                 powerup_spawned = False
                 while not powerup_spawned:
-                    # make powerup
+                    # Make powerup
                     new_invincible = Invincibility(powerup_speed, WIDTH, LENGTH)
                     
-                    # check collision with obstacle
+                    # Check collision with obstacle
                     collided_obstacles = pygame.sprite.spritecollide(new_invincible, obstacle_group, dokill=False)
                     if collided_obstacles:
                         new_invincible.kill()
@@ -149,34 +142,23 @@ def game_loop():
                         all_sprites.add(new_invincible)
                         invincible_group.add(new_invincible)
                         powerup_spawned = True  # Exit the loop after successful spawn
-                    
         
         obstacle_group.update()
         invincible_group.update()
         extra_group.update()
                     
-        # #Movement
+        # Movement
         playerInst.move()
-
-
                     
         # Scrolling background
         y += game_speed  # How fast it scrolls
-        if finish_line_y < -5:
-            finish_line_y += 6
-        if finish_line_y > -500:
-            game_finished = True
-        if finish_line_y > -100:
-            playerInst.stop_moving = True
-            playerInst.rect.y -= 5
-            
-            
+        
         if y >= LENGTH:
             y = 0
         window.blit(background, (x, y))
         window.blit(background, (x, y - LENGTH))
         
-        # draw sprites
+        # Draw sprites
         all_sprites.update()
         obstacle_group.draw(window)
         invincible_group.draw(window)
@@ -196,21 +178,20 @@ def game_loop():
         for powerup in collided_extra:
             powerup.kill()
             playerInst.lives += 1
-            playerInst.score += 5000 #gets extra points for collecting powerup
+            playerInst.score += 5000 # gets extra points for collecting powerup
             
-            
+
         collided_powerups = pygame.sprite.spritecollide(playerInst, invincible_group, dokill=False)
         for powerup in collided_powerups:
             powerup.kill()
             invincible_active = True
             invincible_start_time = pygame.time.get_ticks()
-            playerInst.score += 5000 #gets extra points for collecting powerup
+            playerInst.score += 5000 # gets extra points for collecting powerup
             
         if invincible_active:
             current_ticks = pygame.time.get_ticks()
             if current_ticks - invincible_start_time < invincible_duration:
                 y += game_speed * 1.3  # Example effect: double speed
-                
                 invincible = True
                 for obstacle in obstacle_group:
                     obstacle.speed = obstacle_speed * 2
@@ -231,61 +212,36 @@ def game_loop():
                     powerup.speed = powerup_speed 
             
     
-        # Finish line
-        finish_line = pygame.Rect(0, finish_line_y, 800, 25)
-        finLineMoon = pygame.transform.scale(finLine, (finish_line.width, finish_line.height))
+        # Update score and distance traveled
+        score.display_score(playerInst, window, WIDTH)
         
-        if playerInst.rect.colliderect(finish_line):
-            screens.add_high_score(high_scores,playerInst.score)
-            screens.you_win_screen(WIDTH, LENGTH, window, game_loop)
-            obstacle_speed = 3
-            powerup_speed = 3
-            game_speed = 6
-            
-       
-       
         # Check if lives ran out
         if playerInst.lives <= 0:
             pygame.mixer.Sound.play(death_sound)
-            screens.add_high_score(high_scores,playerInst.score)
-            screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
-            obstacle_speed = 3
-            powerup_speed = 3
-            game_speed = 6
-            
+            screens.add_high_score(high_scores, playerInst.score)
+            screens.game_over_screen(WIDTH, LENGTH, window, game_loop_endless)
             
         # Display lives
-        lives.update_lives(playerInst,window)
+        lives.update_lives(playerInst, window)
 
-        #Updates score
-        if(playerInst.stop_moving == False):
+        # Updates score as long as player is alive
+        if playerInst.stop_moving == False:
             playerInst.score += game_speed
 
-        # Displays score/Distance traveled
-        score.display_score(playerInst,window,WIDTH)
+        # Draw finish line (even though it's not used for end condition anymore)
+        pygame.draw.rect(window, BLUE, pygame.Rect(0, finish_line_y, 800, 25))
         
-        # Draw finish line
-<<<<<<< HEAD
-        pygame.draw.rect(window, BLACK, finish_line)
-        window.blit(finLine, (75, finish_line_y))
-=======
-        pygame.draw.rect(window, BLUE, finish_line)
->>>>>>> a55c8080697c66a3ac22fa35a5fa1a7903cd18b7
-        
-         # Calculate progress
+        # Calculate progress
         progress = 1 - (finish_line_y / total_distance)
 
-        # draws progress bar
-        level_progress.update_progress_bar(progress,window)
-        
+     
         
         pygame.display.flip()
-        #print(high_scores)
         
 def main():
     while True:
-        screens.show_start_screen(WIDTH, LENGTH, window, game_loop)
-        game_loop()
+     
+        game_loop_endless()
         
 if __name__ == "__main__":
     main()

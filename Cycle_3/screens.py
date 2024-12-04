@@ -3,6 +3,7 @@ import sys
 import random
 import time
 import cv2
+from endless import game_loop_endless
 from main import *
 from os.path import join
 
@@ -18,7 +19,6 @@ backgroundW = pygame.image.load(join("Cycle_3/sprites","AwexomeCrossTitleScreenY
 backgroundY = pygame.image.load(join("Cycle_3/sprites","AwexomeCrossTitleScreenW.png"))
 backgroundS = pygame.image.load(join("Cycle_3/sprites","space.png"))
 moon = pygame.image.load(join("Cycle_3/sprites","8-bitMoonEND.png"))
-finLine = pygame.image.load(join("Cycle_3/sprites","8-bitMoonFINISHLINE.png"))
 
 class Button:
     def __init__(self, x, y, width, height, color, play):
@@ -73,7 +73,7 @@ def show_start_screen(WIDTH, LENGTH, window, game_loop):
       
 def game_over_screen(WIDTH, LENGTH, window, game_loop):
     replay_button = Button(WIDTH // 2 - 250, LENGTH // 2 - 25, 200, 50, RED, "Try again")
-    menu_button = Button(WIDTH // 2 + 50, LENGTH // 2 - 25, 200, 50, BLUE, "Main Menu")
+    menu_button = Button(WIDTH // 2 + 50, LENGTH // 2 - 25, 200, 50, RED, "Main Menu")
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
     while True:
         window.fill(BLACK)
@@ -99,29 +99,40 @@ def game_over_screen(WIDTH, LENGTH, window, game_loop):
         pygame.time.Clock().tick(fps)
         
 def you_win_screen(WIDTH, LENGTH, window, game_loop):
-    play_button = Button(WIDTH // 2 - 250, LENGTH // 2 - 25, 200, 50, GREEN, "Play Again")
-    menu_button = Button(WIDTH // 2 + 50, LENGTH // 2 - 25, 200, 50, BLUE, "Main Menu")
+    play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play Again")
+    endless_button = Button(WIDTH // 2 - 100, LENGTH // 2 + 50, 200, 50, BLUE, "Endless Mode")  # Added endless mode button
+    menu_button = Button(WIDTH // 2 - 100, LENGTH // 2 + 125, 200, 50, RED, "Main Menu")  # Main menu button
     my_font = pygame.font.SysFont('Comic Sans MS', 60)
+    
     while True:
         window.fill(BLACK)
         window.blit(backgroundS, (0,0))
         window.blit(moon, (75,400))
-        play_surface = my_font.render('You Win!', False, YELLOW)
+        play_surface = my_font.render('You Win!', False, (0, 0, 0))
         play_rect = play_surface.get_rect(center = (WIDTH/2, LENGTH / 2 - 80)) #created rect for the play to center it
         window.blit(play_surface, play_rect)
-        play_button.draw(window)
-        menu_button.draw(window)
         
+        # Draw the buttons
+        play_button.draw(window)
+        endless_button.draw(window)  # Draw the endless mode button
+        menu_button.draw(window)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_clicked(event.pos):
-                    game_loop()
+                    game_loop()  # Restart the game
+                if endless_button.is_clicked(event.pos):
+                    game_loop_endless()  # Start the endless mode
+                if menu_button.is_clicked(event.pos):
+                    screens.show_start_screen(WIDTH, LENGTH, window, game_loop)  # Go back to the main menu
         
         pygame.display.flip()
         pygame.time.Clock().tick(fps)
+
+
 
 def high_score_screen(WIDTH, LENGTH, window, game_loop):
     start_screen_button = Button(WIDTH / 2 - 100, LENGTH - 100, 200, 50, RED, "Return")
