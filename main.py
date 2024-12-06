@@ -1,199 +1,280 @@
-"""Module providing a function printing python version."""
 import pygame
 import sys
 import random
 import time
-
+from player import Player
+from obstacle import Obstacle
+from powerups import Invincibility
+from powerups import ExtraLives
+from OSD_elements import *
+import screens
+from os.path import join
+import cv2
 pygame.init()
 pygame.font.init()
-
 #the screen
-WIDTH = 800
+WIDTH = 600
 LENGTH = 600
 window = pygame.display.set_mode([WIDTH, LENGTH])
-background = pygame.image.load("spacee.jpg") # put stars image here
+background = pygame.image.load(join('Cycle_3/sprites',"space.png")) # put stars image here
 fps = 60
+timing = 1
 timer = pygame.time.Clock()
+obstacle_speed = 3
+powerup_speed = 3
+game_speed = 6
+obstacle_interval = 600  # how fast obstacles spawn
+invincible_interval = random.randint(11000, 15000)
+extra_interval = random.randint(18000, 22000)
+high_scores = []
+
+
+finLine = pygame.image.load(join("Cycle_3/sprites","8-bitMoonFINISHLINE.png"))
+
+death_sound = pygame.mixer.Sound(join("Cycle_3/audio","deathSound.wav"))
+hit_sound = pygame.mixer.Sound(join('Cycle_3/audio',"hit.wav"))
 
 #define colours for random rectangles
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-class Button:
-    def __init__(self, x, y, width, height, color, text):
-        self.rect = pygame.Rect(x, y, width, height)
-        self.color = color
-        self.text = text
-        self.font = pygame.font.Font(None, 36)
-        
-    def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
-        text_surf = self.font.render(self.text, True, BLUE)
-        text_rect = text_surf.get_rect(center=self.rect.center)
-        surface.blit(text_surf, text_rect)
-        
-    def is_clicked(self, pos):
-        return self.rect.collidepoint(pos)
-    
-def show_start_screen():
-    play_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Play")
-    my_font = pygame.font.SysFont('Comic Sans MS', 80)
-    while True:
-        window.fill(RED)
-        text_surface = my_font.render('Awesome Cross V2', False, (0, 0, 0))
-        window.blit(text_surface, (55,150))
-        play_button.draw(window)
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if play_button.is_clicked(event.pos):
-                    game_loop()  # Exit the start screen loop and start the game
-        
-        pygame.display.flip()
-        timer.tick(fps)
-        
-def game_over_screen():
-    replay_button = Button(WIDTH // 2 - 100, LENGTH // 2 - 25, 200, 50, GREEN, "Try again")
-    my_font = pygame.font.SysFont('Comic Sans MS', 80)
-    while True:
-        window.fill(RED)
-        text_surface = my_font.render('Game Over!', False, (0, 0, 0))
-        window.blit(text_surface, (190,150))
-        replay_button.draw(window)
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if replay_button.is_clicked(event.pos):
-                    game_loop()  # Exit the start screen loop and start the game
-        
-        pygame.display.flip()
-        timer.tick(fps)
-    
+BLACK = (0,0,0)
+
+
 
 def game_loop():
-    #character stuff
-    character_radius = 30
-    character_x = WIDTH // 2
-    character_y = 450
-    lives = 3;
-    speed = 7
-    obstacle_speed = 6
-    grace_time = 3
-    game_start_time = time.time()
+    global game_speed, obstacle_speed, powerup_speed
+    playerInst = Player(WIDTH, LENGTH)
+    all_sprites = pygame.sprite.Group()
+    all_sprites.add(playerInst)
+    
+    obstacle_group = pygame.sprite.Group()
+    invincible_group = pygame.sprite.Group()
+    extra_group = pygame.sprite.Group()
+    
+    
+    obstacle_event = pygame.USEREVENT + 1
+    invincible_event = pygame.USEREVENT + 2
+    extra_event = pygame.USEREVENT + 3
 
-    #for background start
+    pygame.time.set_timer(obstacle_event, obstacle_interval)
+    pygame.time.set_timer(invincible_event, invincible_interval)
+    pygame.time.set_timer(extra_event, extra_interval)
+    
+    # Power-up state tracking
+    invincible_active = False
+    invincible_start = 0
+    invincible_duration = 2000  # 5 seconds for power-up effect
+    invincible = False
+    
+    
+    # for the background
     x = 0
     y = 0
-
-
-    #Makes random rectangles to collide with
-    obstacles=[]
-    for _ in range(15):
-        obstacle_rect = pygame.Rect(random.randint(0, 500), random.randint(-400, 0), 25, 25)
-        obstacles.append(obstacle_rect)
     
+    #random variable test
+    z = 0
+    
+    #finishline, change both because total_distance is needed for progress bar
+    finish_line_y = -30000
+    total_distance = -30000
+      
+    game_finished = False
+    stop_moving = False
+    
+    start_time = time.time()
+    speedup_interval = 3 #every 10 seconds game gets faster
+    speedup_interval = 10  #every 10 seconds game gets faster
 
-    # Blink parameters
-    last_blink_time = 0
-    blinking = False
-    blink_duration = 0.15
-
+    # Creates progress bar object
+    level_progress = progress_bar(WIDTH)
+    
     running = True
-    #--------------------------------------------
     while running:
         timer.tick(fps)
         current_time = time.time()
         
+        #for the game getting faster every set time
+        if(current_time - start_time >= speedup_interval):
+            game_speed += 0.6  #how fast the background moves
+            obstacle_speed += 0.3 #obstacles --
+            powerup_speed += 0.3  #powerups --  both of these need to be half the game speed to align
+            playerInst.speed += 0.6  # player speed gets faster to compensate
+            start_time = current_time  # loop
+            for obstacle in obstacle_group:
+                obstacle.speed = obstacle_speed
+            for powerup in invincible_group:
+                powerup.speed = powerup_speed
+            for powerup in extra_group:
+                powerup.speed = powerup_speed
+
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-                
-        #moving side to side
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
-            character_y -= speed
-        if keys[pygame.K_a]:
-            character_x -= speed
-        if keys[pygame.K_s]:
-            character_y += speed
-        if keys[pygame.K_d]:
-            character_x += speed
-            
-        #borders so character doesn't move out of the screen   
-        character_x = max(character_radius, min(WIDTH - character_radius, character_x))
-        character_y = max(character_radius, min(LENGTH - character_radius, character_y))
+            elif event.type == obstacle_event and not game_finished:
+                #creating obstacle
+                new_obstacle = Obstacle(obstacle_speed, WIDTH, LENGTH)
+                all_sprites.add(new_obstacle)  
+                obstacle_group.add(new_obstacle)
+            elif event.type == extra_event and not game_finished:
+                powerup_spawned = False
+                while not powerup_spawned:
+                    # make powerup
+                    new_extra = ExtraLives(powerup_speed, WIDTH, LENGTH)
+                    
+                    # check collision with obstacle
+                    collided_obstacles = pygame.sprite.spritecollide(new_extra, obstacle_group, dokill=False)
+                    if collided_obstacles:
+                        new_extra.kill()
+                    # If no collision, add the power-up to the groups and break the loop
+                    if not collided_obstacles:
+                        all_sprites.add(new_extra)
+                        extra_group.add(new_extra)
+                        powerup_spawned = True  # Exit the loop after successful spawn
+            elif event.type == invincible_event and not game_finished:
+                powerup_spawned = False
+                while not powerup_spawned:
+                    # make powerup
+                    new_invincible = Invincibility(powerup_speed, WIDTH, LENGTH)
+                    
+                    # check collision with obstacle
+                    collided_obstacles = pygame.sprite.spritecollide(new_invincible, obstacle_group, dokill=False)
+                    if collided_obstacles:
+                        new_invincible.kill()
+                    # If no collision, add the power-up to the groups and break the loop
+                    if not collided_obstacles:
+                        all_sprites.add(new_invincible)
+                        invincible_group.add(new_invincible)
+                        powerup_spawned = True  # Exit the loop after successful spawn
+                    
         
-                
-        #scrolling background
-        y += 6 #how fast it scrolls
-        if y == LENGTH:
+        obstacle_group.update()
+        invincible_group.update()
+        extra_group.update()
+                    
+        # #Movement
+        playerInst.move()
+
+
+                    
+        # Scrolling background
+        y += game_speed  # How fast it scrolls
+        if finish_line_y < -5:
+            finish_line_y += 6
+        if finish_line_y > -500:
+            game_finished = True
+        if finish_line_y > -100:
+            playerInst.stop_moving = True
+            playerInst.rect.y -= 5
+            
+            
+        if y >= LENGTH:
             y = 0
         window.blit(background, (x, y))
-        window.blit(background, (x, y - LENGTH))    
-            #move rectangles
-        for obstacle in obstacles:
-            obstacle.y += obstacle_speed
-            if obstacle.y > LENGTH:
-                obstacle.y = -obstacle_speed  # Respawn at the top
-                obstacle.x = random.randint(0, WIDTH - obstacle_speed)  # Random new horizontal position
-            
-                    
-        #draw all rectangles  
-        for obstacle in obstacles:
-            pygame.draw.rect(window, BLUE, obstacle)
-                    
-            
-        #check collision and change colour
-        character = pygame.Rect(character_x - character_radius, character_y - character_radius, character_radius * 2, character_radius * 2)
-        col = GREEN
-        for obstacle in obstacles:
-            if character.colliderect(obstacle):
-                if not blinking:
-                    blinking = True
-                    last_blink_time = current_time
-                    col = RED
-                    lives -= 1  # Deduct a life on collision
-                    obstacles.remove(obstacle)  # Optional: remove the obstacle to avoid repeated collision
-            
+        window.blit(background, (x, y - LENGTH))
         
-        # Handle blinking
-        if blinking:
-            if current_time - last_blink_time < blink_duration:
-                col = RED
-            else:
-                blinking = False
+        # draw sprites
+        all_sprites.update()
+        obstacle_group.draw(window)
+        invincible_group.draw(window)
+        extra_group.draw(window)
+        window.blit(playerInst.image, playerInst.rect)
+
         
-        
-        pygame.draw.circle(window, col, (character_x,character_y), character_radius)
+        if invincible == False:
+            # player/obstacle COLLISION
+            collided_obstacles = pygame.sprite.spritecollide(playerInst, obstacle_group, dokill=False)
+            for obstacle in collided_obstacles:
+                obstacle.kill()  # remove obstacle after hitting it
+                pygame.mixer.Sound.play(hit_sound)
+                playerInst.lives -= 1
                 
-        # Check if lives are depleted
-        if lives <= 0:
-            game_over_screen()  # we can replace this with an end game screen or restart logic
+        collided_extra = pygame.sprite.spritecollide(playerInst, extra_group, dokill=False)
+        for powerup in collided_extra:
+            powerup.kill()
+            playerInst.lives += 1
+            playerInst.score += 5000 #gets extra points for collecting powerup
             
             
-        lives_text = pygame.font.SysFont('Comic Sans MS', 30)
-        text_surface = lives_text.render('Lives: ' + str(lives), False, (0, 255, 0))
-        window.blit(text_surface, (5,560))
-        
-     
-        pygame.display.flip()
+        collided_powerups = pygame.sprite.spritecollide(playerInst, invincible_group, dokill=False)
+        for powerup in collided_powerups:
+            powerup.kill()
+            invincible_active = True
+            invincible_start_time = pygame.time.get_ticks()
+            playerInst.score += 5000 #gets extra points for collecting powerup
+            
+        if invincible_active:
+            current_ticks = pygame.time.get_ticks()
+            if current_ticks - invincible_start_time < invincible_duration:
+                y += game_speed * 1.3  # Example effect: double speed
+                
+                invincible = True
+                for obstacle in obstacle_group:
+                    obstacle.speed = obstacle_speed * 2
+                for powerup in invincible_group:
+                    powerup.speed = powerup_speed * 2
+                for powerup in extra_group:
+                    powerup.speed = powerup_speed * 2
+            else:
+                invincible_active = False
+                invincible = False
+                
+                y += 6  # Reset speed to normal
+                for obstacle in obstacle_group:
+                    obstacle.speed = obstacle_speed 
+                for powerup in invincible_group:
+                    powerup.speed = powerup_speed 
+                for powerup in extra_group:
+                    powerup.speed = powerup_speed 
+            
     
+        # Finish line
+        finish_line = pygame.Rect(0, finish_line_y, 800, 25)
+        
+        
+        if playerInst.rect.colliderect(finish_line):
+            screens.add_high_score(high_scores,playerInst.score)
+            screens.you_win_screen(WIDTH, LENGTH, window, game_loop)
+            
+       
+       
+        # Check if lives ran out
+        if playerInst.lives <= 0:
+            pygame.mixer.Sound.play(death_sound)
+            screens.add_high_score(high_scores,playerInst.score)
+            screens.game_over_screen(WIDTH, LENGTH, window, game_loop)
+            
+            
+        # Display lives
+        lives.update_lives(playerInst,window)
+
+        #Updates score
+        if(playerInst.stop_moving == False):
+            playerInst.score += game_speed
+
+        # Displays score/Distance traveled
+        score.display_score(playerInst,window,WIDTH)
+        
+        # Draw finish line
+        pygame.draw.rect(window, BLUE, finish_line)
+        window.blit(finLine, (50,-50))
+        
+         # Calculate progress
+        progress = 1 - (finish_line_y / total_distance)
+
+        # draws progress bar
+        level_progress.update_progress_bar(progress,window)
+        
+        
+        pygame.display.flip()
+        #print(high_scores)
+        
 def main():
     while True:
-        show_start_screen()
+        screens.show_start_screen(WIDTH, LENGTH, window, game_loop)
         game_loop()
-        
         
 if __name__ == "__main__":
     main()
-            
-    
-  
-            
